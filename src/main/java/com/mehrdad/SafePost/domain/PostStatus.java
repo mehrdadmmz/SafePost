@@ -1,4 +1,5 @@
-package com.mehrdad.SafePost.domain.entities;
+package com.mehrdad.SafePost.domain;
 
 public enum PostStatus {
+    DRAFT, PUBLISHED
 }
