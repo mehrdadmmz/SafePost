@@ -1,2 +1,2 @@
 # SafePost
- A blog post application buiild in Java, Spring Boot, Spring Security, OAuth2
+ A blog post application build in Java, Spring Boot, Spring Security, OAuth2
