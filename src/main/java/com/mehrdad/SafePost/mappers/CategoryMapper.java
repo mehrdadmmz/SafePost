@@ -2,6 +2,7 @@ package com.mehrdad.SafePost.mappers;
 
 import com.mehrdad.SafePost.domain.PostStatus;
 import com.mehrdad.SafePost.domain.dtos.CategoryDto;
+import com.mehrdad.SafePost.domain.dtos.CreateCategoryRequest;
 import com.mehrdad.SafePost.domain.entities.Category;
 import com.mehrdad.SafePost.domain.entities.Post;
 import org.mapstruct.Mapper;
@@ -18,6 +19,9 @@ public interface CategoryMapper {
     // method in this interface to do that for us.
     @Mapping(target = "postCount", source = "posts", qualifiedByName = "calculatePostCount")
     CategoryDto toDto(Category category);
+
+    // convert from a CreateCategoryRequest to a Category
+    Category toEntity(CreateCategoryRequest createCategoryRequest);
 
     @Named("calculatePostCount")
     default long calculatePostCount(List<Post>  posts) {
