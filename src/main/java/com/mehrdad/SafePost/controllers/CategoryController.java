@@ -7,6 +7,7 @@ import com.mehrdad.SafePost.mappers.CategoryMapper;
 import com.mehrdad.SafePost.services.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,10 @@ public class CategoryController {
     public ResponseEntity<CategoryDto> createCategory(
             @Valid @RequestBody CreateCategoryRequest createCategoryRequest) {
          Category categoryToCreate = categoryMapper.toEntity(createCategoryRequest);
-
+         Category savedCategory = categoryService.createCategory(categoryToCreate);
+         return new ResponseEntity<>(
+                 categoryMapper.toDto(savedCategory),
+                 HttpStatus.CREATED
+         );
     }
 }
