@@ -40,6 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
             if (!category.get().getPosts().isEmpty()) {
                 throw new IllegalArgumentException("Category with id " + id + " already has posts");
             }
+            // as we know, we get all these CRUD functions for free when using the JpaRepository
             categoryRepository.deleteById(id);
         }
     }
