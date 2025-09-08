@@ -32,11 +32,11 @@ public class CategoryController {
         return ResponseEntity.ok(categories);
     }
 
-    @PostMapping
     /* We could use the category dto in the argument, but I will be using a dedicated dto
     which allows us to use some validation annotation like to check if the arg we passed
     satisfies the length, not being null, and not being blank. Checkout CreateCategoryRequest
     in the dto package. We add the @Valid so it needs to pass those requirements mentioned there. */
+    @PostMapping
     public ResponseEntity<CategoryDto> createCategory(
             @Valid @RequestBody CreateCategoryRequest createCategoryRequest) {
          Category categoryToCreate = categoryMapper.toEntity(createCategoryRequest);
