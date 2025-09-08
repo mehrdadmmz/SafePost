@@ -112,6 +112,25 @@ If authenticated -> Controller
 Else -> 401 Unauthorized
 ```
 
+## Stateless Auth
+Instead of keeping sessions in memory, every request carries all the information needed.
+The server doesn’t “remember” anything.
+
+- JWT (JSON Web Token) Authentication:
+
+Flow:
+- User logs in (POST /login with username & password).
+- Server verifies credentials, then creates a JWT token (signed, not encrypted).
+- Client stores the JWT (usually in localStorage or memory).
+- On every request, client sends: 
+```bash
+  Authorization: Bearer <JWT_TOKEN>
+```
+- Server verifies the signature (using a secret key).
+- If valid → request continues. No DB lookup needed.
+
+
+
 ## JWT Work Flow
 
 ```bash
@@ -138,5 +157,28 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...
    |
    v
 Spring Security verifies token -> if valid -> controller runs
+
+```
+
+## Bean
+- A bean = an object managed by Spring (created once, injected everywhere).
+- @Bean is a method-level annotation. It tells Spring: “Run this method once at startup, put the returned object in the container, and manage it as a bean.”
+
+```bash
+
+@Configuration class (SecurityConfig)
+       |
+       |  @Bean methods
+       v
++----------------------------+
+| Spring IoC Container       |
+|   - SecurityFilterChain    |
+|   - PasswordEncoder        |
+|   - AuthenticationManager  |
++----------------------------+
+       |
+       |  @Autowired / constructor injection
+       v
+Other components (Controllers, Services, Filters)
 
 ```

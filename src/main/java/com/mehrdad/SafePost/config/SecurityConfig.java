@@ -29,6 +29,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // @Bean -->
+    // When Spring starts, it calls this method.
+    // It gets back a PasswordEncoder instance.
+    // That instance is registered in the container.
+    // Later, if any class has private final PasswordEncoder passwordEncoder; -→ Spring auto-injects it.
     @Bean
     public PasswordEncoder passwordEncoder() {
         // Passwords should never be stored in plain text
