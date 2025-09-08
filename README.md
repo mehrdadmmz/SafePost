@@ -39,6 +39,7 @@
 - Controller returns ResponseEntity.ok(dtos) → JSON to client
 
 ```bash
+
 Below is a simple architecture of how different layers talk to each other for the Category part
 
 
@@ -84,5 +85,58 @@ Below is a simple architecture of how different layers talk to each other for th
 |       CategoryDto         |
 |  - API contract           |
 +---------------------------+
+```
+
+## Spring Security
+### With the current config file: 
+
+- GET /api/v1/posts/** → public
+- GET /api/v1/categories/** → public
+- GET /api/v1/tags/** → public
+- POST /api/v1/posts, PUT /api/v1/categories, DELETE /api/v1/tags, etc. → require authentication
+- Passwords will be encoded using bcrypt.
+- No sessions; you’ll need stateless auth (JWT tokens or Basic auth).
+
+```bash
+
+Client HTTP Request
+   |
+   v
+[ Security Filter Chain ]
+   |-- matches URL rules?
+   |   |-- /api/v1/posts (GET)? permitAll ✅
+   |   |-- anything else? require authentication 🔒
+   |
+   v
+If authenticated -> Controller
+Else -> 401 Unauthorized
+```
+
+## JWT Work Flow
+
+```bash
+
+POST /api/v1/auth/login
+{
+  "username": "randomUser",
+  "password": "secret"
+}
+
+   |
+   v
+Server verifies -> returns JWT:
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+}
+
+   |
+   v
+Client stores token, then calls:
+GET /api/v1/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...
+
+   |
+   v
+Spring Security verifies token -> if valid -> controller runs
 
 ```

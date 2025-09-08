@@ -24,18 +24,23 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // anything else requires authentication
                 )
                 .csrf(csrf -> csrf.disable()) // disabling csrf tokens
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No HTTP sessions stored on the server. Each request must carry its own authentication (like a JWT token).
                 );
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder(); // for encoding our passwords -> using bcrypt by default
+        // Passwords should never be stored in plain text
+        // This bean creates a PasswordEncoder (by default uses bcrypt).
+        // When saving users, we encode their password. When logging in, Spring compares encoded values.
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        // Exposes the AuthenticationManager, which is the core auth engine in Spring.
+        // Other components (like login endpoints, JWT filters) will use this to authenticate users against your UserDetailsService.
         return config.getAuthenticationManager();
      }
 }
