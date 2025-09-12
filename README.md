@@ -182,3 +182,73 @@ Spring Security verifies token -> if valid -> controller runs
 Other components (Controllers, Services, Filters)
 
 ```
+
+## Auth 
+
+1) Login (issue a token)
+```bash
+
+Client                  Server
+------                  ------------------------------
+POST /auth/login  --->  AuthenticationService.authenticate(email, password)
+                         └─ uses AuthenticationManager + UserDetailsService
+                         (if OK)
+                         → generateToken(userDetails)  (signed JWT)
+<--- 200 { token }       return token to client
+```
+
+2) Use token on protected routes
+```bash
+
+Client                             Server
+------                             ------------------------------------------
+GET /api/... + Authorization: Bearer <JWT>
+                            --->  JwtAuthenticationFilter
+                                   ├─ extract token
+                                   ├─ validate signature + expiry
+                                   ├─ load UserDetails
+                                   └─ set SecurityContext(Authentication)
+                                 → Controller method
+<--- 200 JSON
+```
+
+## Authorization sample 
+
+### Login to get a token
+Suppose the app has a login endpoint:
+```bash
+
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "mehrdad@example.com",
+  "password": "secret123"
+}
+```
+
+Server response:
+```bash
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+}
+```
+That long string is our JWT.
+
+### Use token in Authorization header
+Now when you call a protected endpoint, include the token like this:
+```bash
+
+GET /api/v1/posts/123
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...
+
+```
+
+### Server behaviour
+- Your JWT filter grabs the Authorization header.
+- Strips "Bearer " → leaves just the token.
+- Validates signature + expiry.
+- If valid → sets user details into the SecurityContext.
+- Controller executes normally.
+- If invalid/expired → return 401 Unauthorized.

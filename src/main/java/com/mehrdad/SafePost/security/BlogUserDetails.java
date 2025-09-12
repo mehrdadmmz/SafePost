@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 // BlogUserDetails class bridge the gap between the user entity in our domain
 // and the user details interface that spring sec expects
@@ -51,5 +52,9 @@ public class BlogUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public UUID getId() {
+        return user.getId();
     }
 }
