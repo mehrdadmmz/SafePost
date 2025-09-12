@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AuthResponse {
-    private String token; // JWT
+    private String token; // JWT (JSOn Web Token)
     private long expiresIn;
 }
