@@ -1,5 +1,7 @@
 package com.mehrdad.SafePost.config;
 
+import com.mehrdad.SafePost.security.JwtAuthenticatrionFilter;
+import com.mehrdad.SafePost.services.AuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -10,14 +12,23 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws  Exception {
+    public JwtAuthenticatrionFilter jwtAuthenticatrionFilter(AuthenticationService authenticationService) {
+        return new JwtAuthenticatrionFilter(authenticationService);
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            JwtAuthenticatrionFilter jwtAuthenticatrionFilter) throws  Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll() // any calls to the posts api will be permitted
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll() // any calls to the categories api will be permitted
                         .requestMatchers(HttpMethod.GET, "/api/v1/tags/**").permitAll() // any calls to the tags api will be permitted
@@ -25,7 +36,7 @@ public class SecurityConfig {
                 )
                 .csrf(csrf -> csrf.disable()) // disabling csrf tokens
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No HTTP sessions stored on the server. Each request must carry its own authentication (like a JWT token).
-                );
+                ).addFilterBefore(jwtAuthenticatrionFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
