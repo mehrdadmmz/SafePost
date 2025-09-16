@@ -1,6 +1,8 @@
 package com.mehrdad.SafePost.config;
 
+import com.mehrdad.SafePost.domain.entities.User;
 import com.mehrdad.SafePost.repositories.UserRepository;
+import com.mehrdad.SafePost.security.BlogUserDetails;
 import com.mehrdad.SafePost.security.BlogUserDetailsService;
 import com.mehrdad.SafePost.security.JwtAuthenticatrionFilter;
 import com.mehrdad.SafePost.services.AuthenticationService;
@@ -27,7 +29,21 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository) {
-        return new BlogUserDetailsService(userRepository);
+
+        // create a test user in the db if that user does not already exist
+        BlogUserDetailsService blogUserDetailsService = new BlogUserDetailsService(userRepository);
+
+        String email = "user@test.com";
+        userRepository.findByEmail(email).orElseGet(() -> {
+            User newUSer = User.builder()
+                    .name("Test User")
+                    .email(email)
+                    .password(passwordEncoder().encode("password"))
+                    .build();
+            return userRepository.save(newUSer);
+        });
+
+        return blogUserDetailsService;
     }
 
     @Bean
