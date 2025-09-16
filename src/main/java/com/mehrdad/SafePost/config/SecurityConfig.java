@@ -1,5 +1,7 @@
 package com.mehrdad.SafePost.config;
 
+import com.mehrdad.SafePost.repositories.UserRepository;
+import com.mehrdad.SafePost.security.BlogUserDetailsService;
 import com.mehrdad.SafePost.security.JwtAuthenticatrionFilter;
 import com.mehrdad.SafePost.services.AuthenticationService;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,6 +23,11 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticatrionFilter jwtAuthenticatrionFilter(AuthenticationService authenticationService) {
         return new JwtAuthenticatrionFilter(authenticationService);
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(UserRepository userRepository) {
+        return new BlogUserDetailsService(userRepository);
     }
 
     @Bean
