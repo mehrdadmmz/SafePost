@@ -11,8 +11,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class tagResponse {
+public class TagResponse {
     private UUID id;
     private String name;
-    private Integer postcount;
+    private Integer postCount;
 }
