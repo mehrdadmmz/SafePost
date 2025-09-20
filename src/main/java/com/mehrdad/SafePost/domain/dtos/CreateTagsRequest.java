@@ -17,10 +17,10 @@ import java.util.Set;
 public class CreateTagsRequest {
 
     // we add some validations here and also for the tags down here
-    @NotEmpty(message = "At least one tag name is required!")
-    @Size(max = 10, message = "Maximum {max} tags allowed!")
+    @NotEmpty(message = "At least one tag name is required")
+    @Size(max = 10, message = "Maximum {max} tags allowed")
     private Set<
-            @Size(min = 2, max = 30, message = "Tag name must be between {min} and {max} characters!")
+            @Size(min = 2, max = 30, message = "Tag name must be between {min} and {max} characters")
             @Pattern(regexp = "^[\\w\\s-]+$", message = "Tag name can only contain letters, numbers, spaces and hyphens")
             String> names;
 }
