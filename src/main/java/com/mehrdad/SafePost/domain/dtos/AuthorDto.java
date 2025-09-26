@@ -8,11 +8,10 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TagResponse {
+@Builder
+public class AuthorDto {
     private UUID id;
     private String name;
-    private Integer postCount;
 }

@@ -1,7 +1,7 @@
 package com.mehrdad.SafePost.controllers;
 
 import com.mehrdad.SafePost.domain.dtos.CreateTagsRequest;
-import com.mehrdad.SafePost.domain.dtos.TagResponse;
+import com.mehrdad.SafePost.domain.dtos.TagDto;
 import com.mehrdad.SafePost.domain.entities.Tag;
 import com.mehrdad.SafePost.mappers.TagMapper;
 import com.mehrdad.SafePost.services.TagService;
@@ -22,20 +22,20 @@ public class TagController  {
     private final TagMapper tagMapper;
 
     @GetMapping
-    public ResponseEntity<List<TagResponse>> getAllTags() {
+    public ResponseEntity<List<TagDto>> getAllTags() {
         List<Tag> tags = tagService.getTags();
         // convert the Tag entities to the DTOs
-        List<TagResponse> tagResponses = tags.stream().map(tagMapper::toTagResponse).toList();
-        return ResponseEntity.ok(tagResponses);
+        List<TagDto> tagRespons = tags.stream().map(tagMapper::toTagResponse).toList();
+        return ResponseEntity.ok(tagRespons);
     }
 
     @PostMapping
-    public ResponseEntity<List<TagResponse>> createTags(@RequestBody CreateTagsRequest createTagsRequest) {
+    public ResponseEntity<List<TagDto>> createTags(@RequestBody CreateTagsRequest createTagsRequest) {
         List<Tag> savedTags = tagService.createTags(createTagsRequest.getNames());
-        List<TagResponse> createdTagResponses = savedTags.stream().map(tagMapper::toTagResponse).toList();
+        List<TagDto> createdTagRespons = savedTags.stream().map(tagMapper::toTagResponse).toList();
 
         return new ResponseEntity<>(
-                createdTagResponses,
+                createdTagRespons,
                 HttpStatus.CREATED
         );
     }

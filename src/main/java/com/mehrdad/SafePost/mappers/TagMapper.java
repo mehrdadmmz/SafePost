@@ -1,7 +1,7 @@
 package com.mehrdad.SafePost.mappers;
 
 import com.mehrdad.SafePost.domain.PostStatus;
-import com.mehrdad.SafePost.domain.dtos.TagResponse;
+import com.mehrdad.SafePost.domain.dtos.TagDto;
 import com.mehrdad.SafePost.domain.entities.Post;
 import com.mehrdad.SafePost.domain.entities.Tag;
 import org.mapstruct.Mapper;
@@ -18,7 +18,7 @@ public interface TagMapper {
     // we need to populate the value of postCount in our DTO.
     // So we can define a method in this interface to do that for us.
     @Mapping(target = "postCount", source = "posts", qualifiedByName = "calculatePostCount")
-    TagResponse toTagResponse(Tag tag);
+    TagDto toTagResponse(Tag tag);
 
     @Named("calculatePostCount")
     default Integer calculatePostCount(Set<Post> posts) {
