@@ -2,14 +2,13 @@ package com.mehrdad.SafePost.controllers;
 
 import com.mehrdad.SafePost.domain.dtos.PostDto;
 import com.mehrdad.SafePost.domain.entities.Post;
+import com.mehrdad.SafePost.domain.entities.User;
 import com.mehrdad.SafePost.mappers.PostMapper;
 import com.mehrdad.SafePost.services.PostService;
+import com.mehrdad.SafePost.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +20,7 @@ public class PostController {
 
     private final PostService postService;
     private final PostMapper postMapper;
+    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<List<PostDto>> getAllPosts(
@@ -31,6 +31,15 @@ public class PostController {
 
         // convert them all to the post DTOs
         List<PostDto> postDtos =  posts.stream().map(postMapper::toDto).toList();
+        return ResponseEntity.ok(postDtos);
+    }
+
+    // Draft post endpoint
+    @GetMapping(path = "/drafts")
+    public ResponseEntity<List<PostDto>> getDrafts(@RequestAttribute UUID userID) {
+        User loggedInUser = userService.getUserByID(userID);
+        List<Post> draftPosts = postService.getDraftPosts(loggedInUser);
+        List<PostDto> postDtos = draftPosts.stream().map(postMapper::toDto).toList();
         return ResponseEntity.ok(postDtos);
     }
 }

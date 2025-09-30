@@ -4,6 +4,7 @@ import com.mehrdad.SafePost.domain.PostStatus;
 import com.mehrdad.SafePost.domain.entities.Category;
 import com.mehrdad.SafePost.domain.entities.Post;
 import com.mehrdad.SafePost.domain.entities.Tag;
+import com.mehrdad.SafePost.domain.entities.User;
 import com.mehrdad.SafePost.repositories.PostRepository;
 import com.mehrdad.SafePost.services.CategoryService;
 import com.mehrdad.SafePost.services.PostService;
@@ -58,5 +59,10 @@ public class PostServiceImpl implements PostService {
 
         // when both are null --> we want to return all the published posts
         return postRepository.findAllByStatus(PostStatus.PUBLISHED);
+    }
+
+    @Override
+    public List<Post> getDraftPosts(User user) {
+        return postRepository.findALlByAuthorAndStatus(user, PostStatus.DRAFT);
     }
 }
