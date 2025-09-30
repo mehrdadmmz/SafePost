@@ -27,7 +27,7 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     public List<Post> getAllPosts(UUID categoryId, UUID tagId) {
 
-        // when both category id and tag id are specified
+        // both category id and tag id are specified
         if (categoryId != null && tagId != null) {
             Category category = categoryService.getCategoryById(categoryId);
             Tag tag = tagService.getTagByID(tagId);
@@ -37,5 +37,26 @@ public class PostServiceImpl implements PostService {
                     tag
             );
         }
+
+        // if category id exists only
+        if (categoryId != null) {
+            Category category = categoryService.getCategoryById(categoryId);
+            return postRepository.findAllByStatusAndCategory(
+                    PostStatus.PUBLISHED,
+                    category
+            );
+        }
+
+        // if tag id exists only
+        if (tagId != null) {
+            Tag tag = tagService.getTagByID(tagId);
+            return postRepository.findAllByStatusAndTagsContaining(
+                    PostStatus.PUBLISHED,
+                    tag
+            );
+        }
+
+        // when both are null --> we want to return all the published posts
+        return postRepository.findAllByStatus(PostStatus.PUBLISHED);
     }
 }

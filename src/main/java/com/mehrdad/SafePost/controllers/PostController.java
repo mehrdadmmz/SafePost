@@ -1,6 +1,10 @@
 package com.mehrdad.SafePost.controllers;
 
 import com.mehrdad.SafePost.domain.dtos.PostDto;
+import com.mehrdad.SafePost.domain.entities.Post;
+import com.mehrdad.SafePost.mappers.PostMapper;
+import com.mehrdad.SafePost.services.PostService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,11 +16,21 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/api/v1/posts")
+@RequiredArgsConstructor
 public class PostController {
 
-    @GetMapping
-    public ResponseEntity<List<PostDto>> getAllPosts(@RequestParam(required = false) UUID categoryId,
-                                                     @RequestParam(required = false) UUID tagId) {
+    private final PostService postService;
+    private final PostMapper postMapper;
 
+    @GetMapping
+    public ResponseEntity<List<PostDto>> getAllPosts(
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) UUID tagId) {
+
+        List<Post> posts = postService.getAllPosts(categoryId, tagId);
+
+        // convert them all to the post DTOs
+        List<PostDto> postDtos =  posts.stream().map(postMapper::toDto).toList();
+        return ResponseEntity.ok(postDtos);
     }
 }

@@ -15,4 +15,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     // we need the post status because we only need the published posts
     // the name of the function is by convention so that the spring data JpaRepository can implement it for us.
     List<Post> findAllByStatusAndCategoryAndTagsContaining(PostStatus status, Category category, Tag tag);
+    List<Post> findAllByStatusAndCategory(PostStatus status, Category category);
+    List<Post> findAllByStatusAndTagsContaining(PostStatus status, Tag tag);
+    List<Post> findAllByStatus(PostStatus status);
 }
