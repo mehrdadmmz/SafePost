@@ -36,8 +36,8 @@ public class PostController {
 
     // Draft post endpoint
     @GetMapping(path = "/drafts")
-    public ResponseEntity<List<PostDto>> getDrafts(@RequestAttribute UUID userID) {
-        User loggedInUser = userService.getUserByID(userID);
+    public ResponseEntity<List<PostDto>> getDrafts(@RequestAttribute UUID userId) {
+        User loggedInUser = userService.getUserById(userId);
         List<Post> draftPosts = postService.getDraftPosts(loggedInUser);
         List<PostDto> postDtos = draftPosts.stream().map(postMapper::toDto).toList();
         return ResponseEntity.ok(postDtos);

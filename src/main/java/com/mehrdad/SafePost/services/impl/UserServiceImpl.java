@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public User getUserByID(UUID id) {
+    public User getUserById(UUID id) {
         return userRepository
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
