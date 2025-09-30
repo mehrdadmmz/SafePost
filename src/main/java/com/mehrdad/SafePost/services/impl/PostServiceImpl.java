@@ -1,5 +1,6 @@
 package com.mehrdad.SafePost.services.impl;
 
+import com.mehrdad.SafePost.domain.entities.Category;
 import com.mehrdad.SafePost.domain.entities.Post;
 import com.mehrdad.SafePost.repositories.PostRepository;
 import com.mehrdad.SafePost.services.CategoryService;
@@ -21,6 +22,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> getAllPosts(UUID categoryId, UUID tagId) {
-
+        Category category = categoryService.getCategoryById(categoryId);
+        Tag tag = tagService.
     }
 }

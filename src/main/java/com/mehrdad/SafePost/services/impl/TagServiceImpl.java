@@ -3,6 +3,7 @@ package com.mehrdad.SafePost.services.impl;
 import com.mehrdad.SafePost.domain.entities.Tag;
 import com.mehrdad.SafePost.repositories.TagRepository;
 import com.mehrdad.SafePost.services.TagService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -58,5 +59,11 @@ public class TagServiceImpl implements TagService {
             }
             tagRepository.deleteById(id);
         });
+    }
+
+    @Override
+    public Tag getTagByID(UUID id) {
+        return tagRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("tag not found with ID: " + id));
     }
 }
