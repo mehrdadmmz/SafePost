@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll() // any calls to the posts api will be permitted
+                        .requestMatchers(HttpMethod.GET, "/api/v1/categories/drafts").authenticated() // user needs to be authenticated in oder to see the drafts
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll() // any calls to the categories api will be permitted
                         .requestMatchers(HttpMethod.GET, "/api/v1/tags/**").permitAll() // any calls to the tags api will be permitted
                         .anyRequest().authenticated() // anything else requires authentication
