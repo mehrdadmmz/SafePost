@@ -42,4 +42,9 @@ public class PostController {
         List<PostDto> postDtos = draftPosts.stream().map(postMapper::toDto).toList();
         return ResponseEntity.ok(postDtos);
     }
+
+    @PostMapping
+    public ResponseEntity<PostDto> createPost() {
+
+    }
 }
