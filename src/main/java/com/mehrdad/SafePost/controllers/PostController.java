@@ -9,6 +9,7 @@ import com.mehrdad.SafePost.mappers.PostMapper;
 import com.mehrdad.SafePost.services.PostService;
 import com.mehrdad.SafePost.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,5 +53,9 @@ public class PostController {
         User loggedInUser = userService.getUserById(userId);
         CreatePostRequest createPostRequest = postMapper.toCreatePostRequest(createPostRequestDto);
 
+        Post createdPost = postService.createPost(loggedInUser, createPostRequest);
+        PostDto createdPostDto = postMapper.toDto(createdPost);
+
+        return new ResponseEntity<>(createdPostDto,HttpStatus.CREATED);
     }
 }
