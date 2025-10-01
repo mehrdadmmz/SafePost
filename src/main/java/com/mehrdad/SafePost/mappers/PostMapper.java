@@ -1,5 +1,7 @@
 package com.mehrdad.SafePost.mappers;
 
+import com.mehrdad.SafePost.domain.CreatePostRequest;
+import com.mehrdad.SafePost.domain.dtos.CreatePostRequestDto;
 import com.mehrdad.SafePost.domain.dtos.PostDto;
 import com.mehrdad.SafePost.domain.entities.Post;
 import org.mapstruct.Mapper;
@@ -15,4 +17,6 @@ public interface PostMapper {
     @Mapping(target = "category", source = "category")
     @Mapping(target = "tags", source = "tags")
     PostDto toDto(Post post);
+
+     CreatePostRequest toCreatePostRequest(CreatePostRequestDto dto);
 }

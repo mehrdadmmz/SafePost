@@ -1,5 +1,7 @@
 package com.mehrdad.SafePost.controllers;
 
+import com.mehrdad.SafePost.domain.CreatePostRequest;
+import com.mehrdad.SafePost.domain.dtos.CreatePostRequestDto;
 import com.mehrdad.SafePost.domain.dtos.PostDto;
 import com.mehrdad.SafePost.domain.entities.Post;
 import com.mehrdad.SafePost.domain.entities.User;
@@ -44,7 +46,11 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<PostDto> createPost() {
+    public ResponseEntity<PostDto> createPost(
+            @RequestBody CreatePostRequestDto createPostRequestDto,
+            @RequestAttribute UUID userId) {
+        User loggedInUser = userService.getUserById(userId);
+        CreatePostRequest createPostRequest = postMapper.toCreatePostRequest(createPostRequestDto);
 
     }
 }

@@ -1,5 +1,6 @@
 package com.mehrdad.SafePost.services;
 
+import com.mehrdad.SafePost.domain.CreatePostRequest;
 import com.mehrdad.SafePost.domain.entities.Post;
 import com.mehrdad.SafePost.domain.entities.User;
 
@@ -10,4 +11,6 @@ public interface PostService {
     // getting all the posts
     List<Post> getAllPosts(UUID categoryId, UUID tagId);
     List<Post> getDraftPosts(User user);
+
+    Post createPost(User user, CreatePostRequest createPostRequest);
 }
