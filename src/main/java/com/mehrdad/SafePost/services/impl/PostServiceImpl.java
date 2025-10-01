@@ -2,6 +2,7 @@ package com.mehrdad.SafePost.services.impl;
 
 import com.mehrdad.SafePost.domain.CreatePostRequest;
 import com.mehrdad.SafePost.domain.PostStatus;
+import com.mehrdad.SafePost.domain.UpdatePostRequest;
 import com.mehrdad.SafePost.domain.entities.Category;
 import com.mehrdad.SafePost.domain.entities.Post;
 import com.mehrdad.SafePost.domain.entities.Tag;
@@ -10,6 +11,7 @@ import com.mehrdad.SafePost.repositories.PostRepository;
 import com.mehrdad.SafePost.services.CategoryService;
 import com.mehrdad.SafePost.services.PostService;
 import com.mehrdad.SafePost.services.TagService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,6 +101,12 @@ public class PostServiceImpl implements PostService {
 
         int wordCount = content.trim().split("\\s+").length;
         return (int) Math.ceil((double) wordCount / WORDS_PER_MINUTE);
+    }
+
+    @Override
+    public Post updatePost(UUID id, UpdatePostRequest updatePostRequest) {
+        Post existingPost = postRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Post with id " + id + " not found!"));
     }
 }
 

@@ -1,6 +1,8 @@
 package com.mehrdad.SafePost.services;
 
 import com.mehrdad.SafePost.domain.CreatePostRequest;
+import com.mehrdad.SafePost.domain.UpdatePostRequest;
+import com.mehrdad.SafePost.domain.dtos.UpdatePostRequestDto;
 import com.mehrdad.SafePost.domain.entities.Post;
 import com.mehrdad.SafePost.domain.entities.User;
 
@@ -13,4 +15,5 @@ public interface PostService {
     List<Post> getDraftPosts(User user);
 
     Post createPost(User user, CreatePostRequest createPostRequest);
+    Post updatePost(UUID id, UpdatePostRequest updatePostRequest);
 }

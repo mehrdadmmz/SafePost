@@ -1,13 +1,16 @@
 package com.mehrdad.SafePost.controllers;
 
 import com.mehrdad.SafePost.domain.CreatePostRequest;
+import com.mehrdad.SafePost.domain.UpdatePostRequest;
 import com.mehrdad.SafePost.domain.dtos.CreatePostRequestDto;
 import com.mehrdad.SafePost.domain.dtos.PostDto;
+import com.mehrdad.SafePost.domain.dtos.UpdatePostRequestDto;
 import com.mehrdad.SafePost.domain.entities.Post;
 import com.mehrdad.SafePost.domain.entities.User;
 import com.mehrdad.SafePost.mappers.PostMapper;
 import com.mehrdad.SafePost.services.PostService;
 import com.mehrdad.SafePost.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +51,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<PostDto> createPost(
-            @RequestBody CreatePostRequestDto createPostRequestDto,
+            @Valid @RequestBody CreatePostRequestDto createPostRequestDto,
             @RequestAttribute UUID userId) {
         User loggedInUser = userService.getUserById(userId);
         CreatePostRequest createPostRequest = postMapper.toCreatePostRequest(createPostRequestDto);
@@ -57,5 +60,12 @@ public class PostController {
         PostDto createdPostDto = postMapper.toDto(createdPost);
 
         return new ResponseEntity<>(createdPostDto,HttpStatus.CREATED);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<PostDto> updatePost(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdatePostRequestDto updatePostRequestDto) {
+            UpdatePostRequest updatePostRequest = postMapper.toUpdatePostRequest(updatePostRequestDto);
     }
 }

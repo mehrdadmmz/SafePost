@@ -1,8 +1,10 @@
 package com.mehrdad.SafePost.mappers;
 
 import com.mehrdad.SafePost.domain.CreatePostRequest;
+import com.mehrdad.SafePost.domain.UpdatePostRequest;
 import com.mehrdad.SafePost.domain.dtos.CreatePostRequestDto;
 import com.mehrdad.SafePost.domain.dtos.PostDto;
+import com.mehrdad.SafePost.domain.dtos.UpdatePostRequestDto;
 import com.mehrdad.SafePost.domain.entities.Post;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,4 +21,6 @@ public interface PostMapper {
     PostDto toDto(Post post);
 
      CreatePostRequest toCreatePostRequest(CreatePostRequestDto dto);
+
+     UpdatePostRequest toUpdatePostRequest(UpdatePostRequestDto dto);
 }

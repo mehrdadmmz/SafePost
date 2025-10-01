@@ -10,10 +10,13 @@ import java.util.Set;
 import java.util.UUID;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreatePostRequest {
+@Builder
+public class UpdatePostRequest {
+
+    private UUID id;
+
     private String title;
 
     private String content;
