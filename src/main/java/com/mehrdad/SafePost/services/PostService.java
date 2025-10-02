@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PostService {
+
+    // get a post with its id
+    Post getPost(UUID id);
+
     // getting all the posts
     List<Post> getAllPosts(UUID categoryId, UUID tagId);
     List<Post> getDraftPosts(User user);
