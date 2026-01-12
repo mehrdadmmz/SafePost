@@ -1,5 +1,6 @@
 package com.mehrdad.SafePost.domain.entities;
 
+import com.mehrdad.SafePost.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,11 +32,44 @@ public class User {
     @Column(nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private Role role = Role.USER;
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Post> posts = new ArrayList<>();
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    // Profile fields
+    @Column(columnDefinition = "TEXT")
+    private String bio;
+
+    @Column(length = 500)
+    private String avatarUrl;
+
+    @Column(length = 255)
+    private String avatarFilename;
+
+    @Column(length = 255)
+    private String twitterUrl;
+
+    @Column(length = 255)
+    private String githubUrl;
+
+    @Column(length = 255)
+    private String linkedinUrl;
+
+    @Column(length = 255)
+    private String websiteUrl;
+
+    @Column(length = 255)
+    private String location;
+
+    private LocalDateTime profileCompletedAt;
 
     @Override
     public boolean equals(Object o) {

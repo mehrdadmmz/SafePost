@@ -4,11 +4,45 @@ import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig, AxiosE
 export interface LoginRequest {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export interface AuthResponse {
   token: string;
   expiresIn: number;
+}
+
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: string;
+  bio?: string;
+  avatarUrl?: string;
+  twitterUrl?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  location?: string;
+  postCount?: number;
+}
+
+export interface UpdateProfileRequest {
+  bio?: string | null;
+  location?: string | null;
+  twitterUrl?: string | null;
+  githubUrl?: string | null;
+  linkedinUrl?: string | null;
+  websiteUrl?: string | null;
+  avatarUrl?: string | null;
+  avatarFilename?: string | null;
 }
 
 export interface Category {
@@ -34,6 +68,12 @@ export interface Post {
   category: Category;
   tags: Tag[];
   readingTime?: number;
+  viewCount?: number;
+  likesCount?: number;
+  coverImageUrl?: string;
+  coverImageFilename?: string;
+  coverImageSize?: number;
+  coverImageContentType?: string;
   createdAt: string;
   updatedAt: string;
   status?: PostStatus;
@@ -45,6 +85,10 @@ export interface CreatePostRequest {
   categoryId: string;
   tagIds: string[];
   status: PostStatus;
+  coverImageUrl?: string;
+  coverImageFilename?: string;
+  coverImageSize?: number;
+  coverImageContentType?: string;
 }
 
 export interface UpdatePostRequest extends CreatePostRequest {
@@ -129,6 +173,17 @@ class ApiService {
     return response.data;
   }
 
+  public async register(data: RegisterRequest): Promise<AuthResponse> {
+    const response: AxiosResponse<AuthResponse> = await this.api.post('/auth/register', data);
+    localStorage.setItem('token', response.data.token);
+    return response.data;
+  }
+
+  public async getUserProfile(): Promise<UserProfile> {
+    const response: AxiosResponse<UserProfile> = await this.api.get('/auth/profile');
+    return response.data;
+  }
+
   public logout(): void {
     localStorage.removeItem('token');
   }
@@ -137,6 +192,7 @@ class ApiService {
   public async getPosts(params: {
     categoryId?: string;
     tagId?: string;
+    search?: string;
   }): Promise<Post[]> {
     const response: AxiosResponse<Post[]> = await this.api.get('/posts', { params });
     return response.data;
@@ -203,6 +259,74 @@ class ApiService {
 
   public async deleteTag(id: string): Promise<void> {
     await this.api.delete(`/tags/${id}`);
+  }
+
+  // File upload endpoints
+  public async uploadCoverImage(file: File): Promise<{
+    filename: string;
+    url: string;
+    size: string;
+    contentType: string;
+  }> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await this.api.post('/files/covers', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  }
+
+  public async deleteCoverImage(filename: string): Promise<void> {
+    await this.api.delete(`/files/covers/${filename}`);
+  }
+
+  // Like endpoints
+  public async toggleLike(postId: string): Promise<{
+    likesCount: number;
+    liked: boolean;
+  }> {
+    const response = await this.api.post(`/posts/${postId}/likes`);
+    return response.data;
+  }
+
+  public async getLikeStatus(postId: string): Promise<{
+    likesCount: number;
+    liked: boolean;
+  }> {
+    const response = await this.api.get(`/posts/${postId}/likes`);
+    return response.data;
+  }
+
+  // Profile endpoints
+  public async getPublicProfile(userId: string): Promise<UserProfile> {
+    const response: AxiosResponse<UserProfile> = await this.api.get(`/users/${userId}/profile`);
+    return response.data;
+  }
+
+  public async updateProfile(data: UpdateProfileRequest): Promise<UserProfile> {
+    const response: AxiosResponse<UserProfile> = await this.api.put('/users/profile', data);
+    return response.data;
+  }
+
+  public async uploadAvatar(file: File): Promise<{
+    filename: string;
+    url: string;
+    size: string;
+    contentType: string;
+  }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await this.api.post('/files/avatars', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  }
+
+  public async deleteAvatar(filename: string): Promise<void> {
+    await this.api.delete(`/files/avatars/${filename}`);
   }
 }
 

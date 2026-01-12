@@ -36,6 +36,26 @@ public class Post {
     @Column(nullable = false)
     private Integer readingTime;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer viewCount = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer likesCount = 0;
+
+    @Column(length = 500)
+    private String coverImageUrl;
+
+    @Column(length = 255)
+    private String coverImageFilename;
+
+    @Column
+    private Long coverImageSize;
+
+    @Column(length = 100)
+    private String coverImageContentType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="author_id",  nullable = false)
     private User author;

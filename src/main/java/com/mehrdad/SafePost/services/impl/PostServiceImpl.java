@@ -7,12 +7,15 @@ import com.mehrdad.SafePost.domain.entities.Category;
 import com.mehrdad.SafePost.domain.entities.Post;
 import com.mehrdad.SafePost.domain.entities.Tag;
 import com.mehrdad.SafePost.domain.entities.User;
+import com.mehrdad.SafePost.domain.enums.Role;
 import com.mehrdad.SafePost.repositories.PostRepository;
 import com.mehrdad.SafePost.services.CategoryService;
 import com.mehrdad.SafePost.services.PostService;
 import com.mehrdad.SafePost.services.TagService;
+import com.mehrdad.SafePost.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final CategoryService categoryService;
     private final TagService tagService;
+    private final UserService userService;
 
     private static final int WORDS_PER_MINUTE = 200;
 
@@ -90,6 +94,12 @@ public class PostServiceImpl implements PostService {
         newPost.setAuthor(user);
         newPost.setReadingTime(calculateReadingTime(createPostRequest.getContent()));
 
+        // Set cover image fields if provided
+        newPost.setCoverImageUrl(createPostRequest.getCoverImageUrl());
+        newPost.setCoverImageFilename(createPostRequest.getCoverImageFilename());
+        newPost.setCoverImageSize(createPostRequest.getCoverImageSize());
+        newPost.setCoverImageContentType(createPostRequest.getCoverImageContentType());
+
         Category category = categoryService.getCategoryById(createPostRequest.getCategoryId());
         newPost.setCategory(category);
 
@@ -112,9 +122,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public Post updatePost(UUID id, UpdatePostRequest updatePostRequest) {
+    public Post updatePost(UUID id, UUID userId, UpdatePostRequest updatePostRequest) {
         Post existingPost = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Post with id " + id + " not found!"));
+
+        // Check ownership - users can only update their own posts
+        if (!existingPost.getAuthor().getId().equals(userId)) {
+            throw new AccessDeniedException("You can only update your own posts");
+        }
 
         String postContent = updatePostRequest.getContent();
 
@@ -136,12 +151,73 @@ public class PostServiceImpl implements PostService {
             existingPost.setTags(new HashSet<>(newTags));
         }
 
+        // Update cover image fields if provided
+        existingPost.setCoverImageUrl(updatePostRequest.getCoverImageUrl());
+        existingPost.setCoverImageFilename(updatePostRequest.getCoverImageFilename());
+        existingPost.setCoverImageSize(updatePostRequest.getCoverImageSize());
+        existingPost.setCoverImageContentType(updatePostRequest.getCoverImageContentType());
+
         return postRepository.save(existingPost);
     }
 
     @Override
-    public void deletePost(UUID id) {
+    public void deletePost(UUID id, UUID userId) {
         Post post = getPost(id);
+        User currentUser = userService.getUserById(userId);
+
+        // Allow deletion if user is the author OR if user is an admin (for moderation)
+        boolean isAuthor = post.getAuthor().getId().equals(userId);
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+
+        if (!isAuthor && !isAdmin) {
+            throw new AccessDeniedException("You can only delete your own posts");
+        }
+
         postRepository.delete(post);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Post> searchPosts(String query, UUID categoryId, UUID tagId) {
+        // If query is null or empty, return regular posts
+        if (query == null || query.trim().isEmpty()) {
+            return getAllPosts(categoryId, tagId);
+        }
+
+        String sanitizedQuery = query.trim();
+
+        // Search with both category and tag filters
+        if (categoryId != null && tagId != null) {
+            List<Post> categoryResults = postRepository.searchPostsByCategory(
+                    sanitizedQuery, categoryId, PostStatus.PUBLISHED);
+            // Filter by tag manually since we can't combine in single query
+            return categoryResults.stream()
+                    .filter(post -> post.getTags().stream()
+                            .anyMatch(tag -> tag.getId().equals(tagId)))
+                    .toList();
+        }
+
+        // Search with category filter
+        if (categoryId != null) {
+            return postRepository.searchPostsByCategory(
+                    sanitizedQuery, categoryId, PostStatus.PUBLISHED);
+        }
+
+        // Search with tag filter
+        if (tagId != null) {
+            return postRepository.searchPostsByTag(
+                    sanitizedQuery, tagId, PostStatus.PUBLISHED);
+        }
+
+        // Search all posts
+        return postRepository.searchPosts(sanitizedQuery, PostStatus.PUBLISHED);
+    }
+
+    @Override
+    @Transactional
+    public void incrementViewCount(UUID postId) {
+        Post post = getPost(postId);
+        post.setViewCount(post.getViewCount() + 1);
+        postRepository.save(post);
     }
 }

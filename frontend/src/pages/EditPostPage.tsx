@@ -54,6 +54,10 @@ const EditPostPage: React.FC = () => {
     categoryId: string;
     tagIds: string[];
     status: PostStatus;
+    coverImageUrl?: string;
+    coverImageFilename?: string;
+    coverImageSize?: number;
+    coverImageContentType?: string;
   }) => {
     try {
       setIsSubmitting(true);

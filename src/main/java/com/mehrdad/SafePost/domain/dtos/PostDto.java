@@ -22,6 +22,12 @@ public class PostDto {
     private CategoryDto category;
     private Set<TagDto> tags;
     private Integer readingTime;
+    private Integer viewCount;
+    private Integer likesCount;
+    private String coverImageUrl;
+    private String coverImageFilename;
+    private Long coverImageSize;
+    private String coverImageContentType;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private PostStatus status;

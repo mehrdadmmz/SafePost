@@ -27,4 +27,10 @@ public class UpdatePostRequest {
     private Set<UUID> tagIds = new HashSet<>();
 
     private PostStatus status;
+
+    // Cover image fields (optional)
+    private String coverImageUrl;
+    private String coverImageFilename;
+    private Long coverImageSize;
+    private String coverImageContentType;
 }

@@ -10,26 +10,34 @@ import {
   Button,
   Divider,
   Avatar,
+  Modal,
+  ModalContent,
+  ModalBody,
+  useDisclosure,
 } from '@nextui-org/react';
-import { 
+import {
   Calendar,
   Clock,
   Tag,
   Edit,
   Trash,
   ArrowLeft,
-  Share
+  Eye
 } from 'lucide-react';
 import { apiService, Post } from '../services/apiService';
+import { LikeButton } from '../components/LikeButton';
+import ShareMenu from '../components/ShareMenu';
 
 interface PostPageProps {
   isAuthenticated?: boolean;
   currentUserId?: string;
+  currentUserRole?: string;
 }
 
-const PostPage: React.FC<PostPageProps> = ({ 
+const PostPage: React.FC<PostPageProps> = ({
   isAuthenticated,
-  currentUserId
+  currentUserId,
+  currentUserRole
 }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -37,6 +45,7 @@ const PostPage: React.FC<PostPageProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -71,18 +80,6 @@ const PostPage: React.FC<PostPageProps> = ({
     }
   };
 
-  const handleShare = async () => {
-    try {
-      await navigator.share({
-        title: post?.title,
-        text: post?.content.substring(0, 100) + '...',
-        url: window.location.href,
-      });
-    } catch (err) {
-      // Fallback to copying URL
-      navigator.clipboard.writeText(window.location.href);
-    }
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -95,8 +92,8 @@ const PostPage: React.FC<PostPageProps> = ({
   const createSanitizedHTML = (content: string) => {
     return {
       __html: DOMPurify.sanitize(content, {
-        ALLOWED_TAGS: ['p', 'strong', 'em', 'br'],
-        ALLOWED_ATTR: []
+        ALLOWED_TAGS: ['p', 'strong', 'em', 'br', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'pre', 'code', 'span'],
+        ALLOWED_ATTR: ['class']
       })
     };
   };
@@ -155,38 +152,40 @@ const PostPage: React.FC<PostPageProps> = ({
               Back to Posts
             </Button>
             <div className="flex gap-2">
-              {isAuthenticated && (
-                <>
-                  <Button
-                    as={Link}
-                    to={`/posts/${post.id}/edit`}
-                    color="primary"
-                    variant="flat"
-                    startContent={<Edit size={16} />}
-                    size="sm"
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    color="danger"
-                    variant="flat"
-                    startContent={<Trash size={16} />}
-                    onClick={handleDelete}
-                    isLoading={isDeleting}
-                    size="sm"
-                  >
-                    Delete
-                  </Button>
-                </>
+              {isAuthenticated && currentUserId && post.author?.id === currentUserId && (
+                <Button
+                  as={Link}
+                  to={`/posts/${post.id}/edit`}
+                  color="primary"
+                  variant="flat"
+                  startContent={<Edit size={16} />}
+                  size="sm"
+                >
+                  Edit
+                </Button>
               )}
-              <Button
-                variant="flat"
-                startContent={<Share size={16} />}
-                onClick={handleShare}
-                size="sm"
-              >
-                Share
-              </Button>
+              {isAuthenticated && currentUserId && (post.author?.id === currentUserId || currentUserRole === 'ADMIN') && (
+                <Button
+                  color="danger"
+                  variant="flat"
+                  startContent={<Trash size={16} />}
+                  onClick={handleDelete}
+                  isLoading={isDeleting}
+                  size="sm"
+                >
+                  Delete
+                </Button>
+              )}
+              <ShareMenu
+                url={window.location.href}
+                title={post.title}
+                description={post.content.substring(0, 200)}
+              />
+              <LikeButton
+                postId={post.id}
+                initialLikesCount={post.likesCount}
+                isAuthenticated={isAuthenticated || false}
+              />
             </div>
           </div>
           <h1 className="text-3xl font-bold">{post.title}</h1>
@@ -196,7 +195,12 @@ const PostPage: React.FC<PostPageProps> = ({
                 name={post.author?.name}
                 size="sm"
               />
-              <span className="text-default-600">{post.author?.name}</span>
+              <Link
+                to={`/users/${post.author?.id}/profile`}
+                className="text-default-600 hover:text-primary hover:underline"
+              >
+                {post.author?.name}
+              </Link>
             </div>
             <div className="flex items-center gap-2 text-default-500">
               <Calendar size={16} />
@@ -206,13 +210,29 @@ const PostPage: React.FC<PostPageProps> = ({
               <Clock size={16} />
               <span>{post.readingTime} min read</span>
             </div>
+            {post.viewCount !== undefined && (
+              <div className="flex items-center gap-2 text-default-500">
+                <Eye size={16} />
+                <span>{post.viewCount} {post.viewCount === 1 ? 'view' : 'views'}</span>
+              </div>
+            )}
           </div>
         </CardHeader>
 
         <Divider />
 
+        {post.coverImageUrl && (
+          <div className="w-full flex justify-center bg-default-100 cursor-pointer" onClick={onOpen}>
+            <img
+              src={post.coverImageUrl}
+              alt={post.title}
+              className="max-h-80 w-auto object-contain hover:opacity-90 transition-opacity"
+            />
+          </div>
+        )}
+
         <CardBody>
-          <div 
+          <div
             className="prose max-w-none"
             dangerouslySetInnerHTML={createSanitizedHTML(post.content)}
           />
@@ -236,6 +256,28 @@ const PostPage: React.FC<PostPageProps> = ({
           </div>
         </CardFooter>
       </Card>
+
+      {/* Image Preview Modal */}
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        size="5xl"
+        classNames={{
+          body: "p-0",
+          base: "bg-transparent shadow-none"
+        }}
+      >
+        <ModalContent>
+          <ModalBody>
+            <img
+              src={post.coverImageUrl}
+              alt={post.title}
+              className="w-full h-auto max-h-[90vh] object-contain"
+              onClick={onClose}
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

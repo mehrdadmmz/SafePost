@@ -36,4 +36,10 @@ public class CreatePostRequestDto {
 
     @NotNull(message = "Status is required!")
     private PostStatus status;
+
+    // Cover image fields (optional)
+    private String coverImageUrl;
+    private String coverImageFilename;
+    private Long coverImageSize;
+    private String coverImageContentType;
 }

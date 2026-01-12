@@ -1,0 +1,40 @@
+# Maven build files
+target/
+!target/SafePost-*.jar
+
+# Maven wrapper
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+HELP.md
+*.md
+
+# Environment and config
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Frontend directory (separate Docker image)
+frontend/

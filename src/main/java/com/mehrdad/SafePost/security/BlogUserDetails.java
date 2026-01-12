@@ -21,7 +21,7 @@ public class BlogUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER")); // every single user is going to have the same access
+        return List.of(new SimpleGrantedAuthority(user.getRole().getAuthority()));
     }
 
     @Override

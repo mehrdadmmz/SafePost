@@ -8,11 +8,22 @@ body,
   height: 100vh;
   margin: 0;
   padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
   width: 100%;
   min-height: 100%;
+}
+
+/* Dark mode background */
+html.dark {
+  background-color: #18181b;
+  color: #e4e4e7;
+}
+
+html.dark body {
+  background-color: #18181b;
 }
 
 .ProseMirror {
@@ -61,4 +72,95 @@ body,
 /* Style for focused editor */
 .ProseMirror:focus {
   outline: none;
+}
+
+/* Dark mode prose styles */
+html.dark .prose {
+  color: #e4e4e7;
+}
+
+html.dark .prose h1,
+html.dark .prose h2,
+html.dark .prose h3 {
+  color: #fafafa;
+}
+
+html.dark .prose strong {
+  color: #fafafa;
+}
+
+html.dark .prose a {
+  color: #60a5fa;
+}
+
+html.dark .prose code {
+  background-color: #27272a;
+  color: #e4e4e7;
+}
+
+/* Code block styles */
+pre {
+  background-color: #1e1e1e;
+  border-radius: 0.5rem;
+  color: #e4e4e7;
+  font-family: 'JetBrainsMono', 'Courier New', Courier, monospace;
+  padding: 1rem 1.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+pre code {
+  background: none;
+  color: inherit;
+  font-size: 0.875rem;
+  padding: 0;
+}
+
+html.dark pre {
+  background-color: #1e1e1e;
+  border: 1px solid #3f3f46;
+}
+
+/* Syntax highlighting - works with lowlight */
+.hljs-comment,
+.hljs-quote {
+  color: #6a9955;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in {
+  color: #569cd6;
+}
+
+.hljs-string,
+.hljs-title,
+.hljs-section {
+  color: #ce9178;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable {
+  color: #b5cea8;
+}
+
+.hljs-attr,
+.hljs-attribute {
+  color: #9cdcfe;
+}
+
+.hljs-function,
+.hljs-class .hljs-title {
+  color: #dcdcaa;
+}
+
+.hljs-tag,
+.hljs-name {
+  color: #569cd6;
+}
+
+.hljs-regexp {
+  color: #d16969;
 }

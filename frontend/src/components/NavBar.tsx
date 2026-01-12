@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Navbar,
   NavbarBrand,
@@ -15,13 +15,15 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/react";
-import { Plus, BookOpen, Edit3, LogOut, User, BookDashed } from "lucide-react";
+import { Plus, Edit3, LogOut, BookDashed, Sun, Moon, User, Settings } from "lucide-react";
+import { useTheme } from "./ThemeProvider";
 
 interface NavBarProps {
   isAuthenticated: boolean;
   userProfile?: {
     name: string;
     avatar?: string;
+    id?: string;
   };
   onLogout: () => void;
 }
@@ -32,7 +34,9 @@ const NavBar: React.FC<NavBarProps> = ({
   onLogout,
 }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const menuItems = [
     { name: "Home", path: "/" },
@@ -85,6 +89,16 @@ const NavBar: React.FC<NavBarProps> = ({
       </NavbarContent>
 
       <NavbarContent justify="end">
+        <NavbarItem>
+          <Button
+            isIconOnly
+            variant="light"
+            onPress={toggleTheme}
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+          </Button>
+        </NavbarItem>
         {isAuthenticated ? (
           <>
             <NavbarItem>
@@ -121,8 +135,26 @@ const NavBar: React.FC<NavBarProps> = ({
                   />
                 </DropdownTrigger>
                 <DropdownMenu aria-label="User menu">
-                  <DropdownItem key="drafts" startContent={<Edit3 size={16} />}>
-                    <Link to="/posts/drafts">My Drafts</Link>
+                  <DropdownItem
+                    key="profile"
+                    startContent={<User size={16} />}
+                    onPress={() => navigate(`/users/${userProfile?.id}/profile`)}
+                  >
+                    My Profile
+                  </DropdownItem>
+                  <DropdownItem
+                    key="edit-profile"
+                    startContent={<Settings size={16} />}
+                    onPress={() => navigate('/profile/edit')}
+                  >
+                    Edit Profile
+                  </DropdownItem>
+                  <DropdownItem
+                    key="drafts"
+                    startContent={<Edit3 size={16} />}
+                    onPress={() => navigate('/posts/drafts')}
+                  >
+                    My Drafts
                   </DropdownItem>
                   <DropdownItem
                     key="logout"

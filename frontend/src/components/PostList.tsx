@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link, useNavigate, useNavigation } from 'react-router-dom';
-import { Card, CardBody, CardFooter, CardHeader, Chip, Pagination, Select, SelectItem } from '@nextui-org/react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Card, CardBody, CardFooter, CardHeader, Chip } from '@nextui-org/react';
 import { Post } from '../services/apiService';
-import { Calendar, Clock, Tag } from 'lucide-react';
+import { Calendar, Clock, Tag, Heart } from 'lucide-react';
 import DOMPurify from 'dompurify';
 
 interface PostListProps {
@@ -19,20 +19,9 @@ const PostList: React.FC<PostListProps> = ({
   posts,
   loading,
   error,
-  page,
-  sortBy,
-  onPageChange,
-  onSortChange,
 }) => {
- 
+
   const navigate = useNavigate();
- 
-  const sortOptions = [
-    { value: "createdAt,desc", label: "Newest First" },
-    { value: "createdAt,asc", label: "Oldest First" },
-    { value: "title,asc", label: "Title A-Z" },
-    { value: "title,desc", label: "Title Z-A" },
-  ];
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -40,15 +29,6 @@ const PostList: React.FC<PostListProps> = ({
       month: 'long',
       day: 'numeric'
     });
-  };
-
-  const createSanitizedHTML = (content: string) => {
-    return {
-      __html: DOMPurify.sanitize(content, {
-        ALLOWED_TAGS: ['p', 'strong', 'em', 'br'],
-        ALLOWED_ATTR: []
-      })
-    };
   };
 
   const createExcerpt = (content: string) => {
@@ -119,46 +99,68 @@ const PostList: React.FC<PostListProps> = ({
           <div className="space-y-4">
             {posts?.map((post) => (
               <Card key={post.id} className="w-full p-2" isPressable={true} onPress={() => navToPostPage(post)}>
-                <CardHeader className="flex gap-3">                 
-                    <div className='flex flex-col'>
-                    <h2 className="text-xl font-bold text-left">
+                <CardHeader className="flex justify-between items-start gap-3">
+                    <h2 className="text-xl font-bold text-left flex-1">
                       {post.title}
                     </h2>
-                    <p className="text-small text-default-500">
-                      by {post.author?.name}
-                    </p>                
+                    <div className="flex items-center gap-1 text-small text-default-500">
+                      <Heart size={16} />
+                      <span>{post.likesCount || 0}</span>
                     </div>
                 </CardHeader>
                 <CardBody>
-                  <p className="line-clamp-3">
-                    {createExcerpt(post.content)}
-                  </p>
+                  <div className="flex gap-4">
+                    {post.coverImageUrl && (
+                      <div className="flex-shrink-0">
+                        <img
+                          src={post.coverImageUrl}
+                          alt={post.title}
+                          className="w-32 h-24 object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
+                    <p className="line-clamp-3 flex-1">
+                      {createExcerpt(post.content)}
+                    </p>
+                  </div>
                 </CardBody>
-                <CardFooter className="flex flex-wrap gap-3">
-                  <div className="flex items-center gap-1 text-small text-default-500">
-                    <Calendar size={16} />
-                    {formatDate(post.createdAt)}
-                  </div>
-                  <div className="flex items-center gap-1 text-small text-default-500">
-                    <Clock size={16} />
-                    {post.readingTime} min read
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Chip
-                      className="bg-primary-100 text-primary"
-                    >
-                      {post.category.name}
-                    </Chip>
-                    {post.tags.map((tag) => (
+                <CardFooter className="flex justify-between items-end gap-3">
+                  <div className="flex flex-wrap gap-3">
+                    <div className="flex items-center gap-1 text-small text-default-500">
+                      <Calendar size={16} />
+                      {formatDate(post.createdAt)}
+                    </div>
+                    <div className="flex items-center gap-1 text-small text-default-500">
+                      <Clock size={16} />
+                      {post.readingTime} min read
+                    </div>
+                    <div className="flex flex-wrap gap-2">
                       <Chip
-                        key={tag.id}
-                        className="bg-default-100"
-                        startContent={<Tag size={14} />}
+                        className="bg-primary-100 text-primary"
                       >
-                        {tag.name}
+                        {post.category.name}
                       </Chip>
-                    ))}
+                      {post.tags.map((tag) => (
+                        <Chip
+                          key={tag.id}
+                          className="bg-default-100"
+                          startContent={<Tag size={14} />}
+                        >
+                          {tag.name}
+                        </Chip>
+                      ))}
+                    </div>
                   </div>
+                  <p className="text-small text-default-500 whitespace-nowrap">
+                    by{' '}
+                    <Link
+                      to={`/users/${post.author?.id}/profile`}
+                      className="text-primary hover:underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {post.author?.name}
+                    </Link>
+                  </p>
                 </CardFooter>
               </Card>
             ))}

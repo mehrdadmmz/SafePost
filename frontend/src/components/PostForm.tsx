@@ -19,17 +19,21 @@ import Heading from '@tiptap/extension-heading';
 import BulletList from '@tiptap/extension-bullet-list';
 import OrderedList from '@tiptap/extension-ordered-list';
 import ListItem from '@tiptap/extension-list-item';
-import { 
-  Bold, 
-  Italic, 
-  Undo, 
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import { lowlight } from 'lowlight';
+import {
+  Bold,
+  Italic,
+  Undo,
   Redo,
   List,
   ListOrdered,
   ChevronDown,
-  X
+  X,
+  FileCode
 } from 'lucide-react';
 import { Post, Category, Tag, PostStatus } from '../services/apiService';
+import { ImageUpload } from './ImageUpload';
 
 interface PostFormProps {
   initialPost?: Post | null;
@@ -39,6 +43,10 @@ interface PostFormProps {
     categoryId: string;
     tagIds: string[];
     status: PostStatus;
+    coverImageUrl?: string;
+    coverImageFilename?: string;
+    coverImageSize?: number;
+    coverImageContentType?: string;
   }) => Promise<void>;
   onCancel: () => void;
   categories: Category[];
@@ -60,6 +68,17 @@ const PostForm: React.FC<PostFormProps> = ({
   const [status, setStatus] = useState<PostStatus>(
     initialPost?.status || PostStatus.DRAFT
   );
+  const [coverImage, setCoverImage] = useState<{
+    url?: string;
+    filename?: string;
+    size?: number;
+    contentType?: string;
+  }>({
+    url: initialPost?.coverImageUrl,
+    filename: initialPost?.coverImageFilename,
+    size: initialPost?.coverImageSize,
+    contentType: initialPost?.coverImageContentType,
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const editor = useEditor({
@@ -68,6 +87,7 @@ const PostForm: React.FC<PostFormProps> = ({
         heading: false, // Disable default heading to use our custom config
         bulletList: false, // Disable default list to use our custom config
         orderedList: false, // Disable default list to use our custom config
+        codeBlock: false, // Disable default code block to use lowlight version
       }),
       Heading.configure({
         levels: [1, 2, 3],
@@ -79,6 +99,9 @@ const PostForm: React.FC<PostFormProps> = ({
       OrderedList.configure({
         keepMarks: true,
         keepAttributes: false,
+      }),
+      CodeBlockLowlight.configure({
+        lowlight,
       }),
       ListItem,
     ],
@@ -130,6 +153,10 @@ const PostForm: React.FC<PostFormProps> = ({
       categoryId: categoryId,
       tagIds: selectedTags.map(tag => tag.id),
       status,
+      coverImageUrl: coverImage.url,
+      coverImageFilename: coverImage.filename,
+      coverImageSize: coverImage.size,
+      coverImageContentType: coverImage.contentType,
     });
   };
 
@@ -144,7 +171,7 @@ const PostForm: React.FC<PostFormProps> = ({
   };
 
   const handleHeadingSelect = (level: number) => {
-    editor?.chain().focus().toggleHeading({ level }).run();
+    editor?.chain().focus().toggleHeading({ level: level as 1 | 2 | 3 }).run();
   };
 
   const suggestedTags = availableTags
@@ -163,6 +190,29 @@ const PostForm: React.FC<PostFormProps> = ({
               isInvalid={!!errors.title}
               errorMessage={errors.title}
               isRequired
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Cover Image (Optional)</label>
+            <ImageUpload
+              initialImageUrl={coverImage.url}
+              onUploadSuccess={(imageData) => {
+                setCoverImage({
+                  url: imageData.url,
+                  filename: imageData.filename,
+                  size: imageData.size,
+                  contentType: imageData.contentType,
+                });
+              }}
+              onRemove={() => {
+                setCoverImage({
+                  url: undefined,
+                  filename: undefined,
+                  size: undefined,
+                  contentType: undefined,
+                });
+              }}
             />
           </div>
 
@@ -232,6 +282,15 @@ const PostForm: React.FC<PostFormProps> = ({
                 className={editor?.isActive('orderedList') ? 'bg-default-200' : ''}
               >
                 <ListOrdered size={16} />
+              </Button>
+              <Button
+                size="sm"
+                isIconOnly
+                variant="flat"
+                onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
+                className={editor?.isActive('codeBlock') ? 'bg-default-200' : ''}
+              >
+                <FileCode size={16} />
               </Button>
 
               <div className="h-6 w-px bg-default-300 mx-2" />

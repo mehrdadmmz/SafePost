@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  Card, 
-  CardHeader, 
+import {
+  Card,
+  CardHeader,
   CardBody,
-  Tabs, 
+  Tabs,
   Tab,
 } from '@nextui-org/react';
 import { apiService, Post, Category, Tag } from '../services/apiService';
 import PostList from '../components/PostList';
+import { SearchBar } from '../components/SearchBar';
 
 const HomePage: React.FC = () => {
   const [posts, setPosts] = useState<Post[] | null>(null);
@@ -19,15 +20,17 @@ const HomePage: React.FC = () => {
   const [sortBy, setSortBy] = useState("createdAt,desc");
   const [selectedCategory, setSelectedCategory] = useState<string|undefined>(undefined);
   const [selectedTag, setSelectedTag] = useState<string | undefined>(undefined);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         const [postsResponse, categoriesResponse, tagsResponse] = await Promise.all([
-          apiService.getPosts({      
+          apiService.getPosts({
             categoryId: selectedCategory != undefined ? selectedCategory : undefined,
-            tagId: selectedTag || undefined
+            tagId: selectedTag || undefined,
+            search: searchQuery || undefined
           }),
           apiService.getCategories(),
           apiService.getTags()
@@ -45,7 +48,7 @@ const HomePage: React.FC = () => {
     };
 
     fetchData();
-  }, [page, sortBy, selectedCategory, selectedTag]);
+  }, [page, sortBy, selectedCategory, selectedTag, searchQuery]);
 
   const handleCategoryChange = (categoryId: string|undefined) => {
     if("all" === categoryId){
@@ -62,7 +65,12 @@ const HomePage: React.FC = () => {
           <h1 className="text-2xl font-bold">Blog Posts</h1>
         </CardHeader>
         <CardBody>
-          <div className="flex flex-col gap-4">                     
+          <div className="flex flex-col gap-4">
+            <SearchBar
+              onSearch={setSearchQuery}
+              placeholder="Search posts by title, content, or author..."
+              initialValue={searchQuery}
+            />
             <Tabs 
               selectedKey={selectedCategory} 
               onSelectionChange={(key) => {

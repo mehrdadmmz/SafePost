@@ -31,9 +31,17 @@ public class PostController {
     @GetMapping
     public ResponseEntity<List<PostDto>> getAllPosts(
             @RequestParam(required = false) UUID categoryId,
-            @RequestParam(required = false) UUID tagId) {
+            @RequestParam(required = false) UUID tagId,
+            @RequestParam(required = false) String search) {
 
-        List<Post> posts = postService.getAllPosts(categoryId, tagId);
+        List<Post> posts;
+
+        // If search query is provided, use search method
+        if (search != null && !search.trim().isEmpty()) {
+            posts = postService.searchPosts(search, categoryId, tagId);
+        } else {
+            posts = postService.getAllPosts(categoryId, tagId);
+        }
 
         // convert them all to the post DTOs
         List<PostDto> postDtos =  posts.stream().map(postMapper::toDto).toList();
@@ -65,9 +73,10 @@ public class PostController {
     @PutMapping(path = "/{id}")
     public ResponseEntity<PostDto> updatePost(
             @PathVariable UUID id,
-            @Valid @RequestBody UpdatePostRequestDto updatePostRequestDto) {
+            @Valid @RequestBody UpdatePostRequestDto updatePostRequestDto,
+            @RequestAttribute UUID userId) {
             UpdatePostRequest updatePostRequest = postMapper.toUpdatePostRequest(updatePostRequestDto);
-            Post updatedPost = postService.updatePost(id, updatePostRequest);
+            Post updatedPost = postService.updatePost(id, userId, updatePostRequest);
             PostDto updatedPostDto = postMapper.toDto(updatedPost);
 
             return ResponseEntity.ok(updatedPostDto);
@@ -76,14 +85,18 @@ public class PostController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<PostDto> getPost(@PathVariable UUID id) {
         Post post = postService.getPost(id);
+
+        // Increment view count
+        postService.incrementViewCount(id);
+
         PostDto postDto = postMapper.toDto(post);
 
         return ResponseEntity.ok(postDto);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable UUID id) {
-        postService.deletePost(id);
+    public ResponseEntity<Void> deletePost(@PathVariable UUID id, @RequestAttribute UUID userId) {
+        postService.deletePost(id, userId);
         return ResponseEntity.noContent().build();
     }
 }

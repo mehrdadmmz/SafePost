@@ -8,6 +8,7 @@ import com.mehrdad.SafePost.services.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class TagController  {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<TagDto>> createTags(@RequestBody CreateTagsRequest createTagsRequest) {
         List<Tag> savedTags = tagService.createTags(createTagsRequest.getNames());
         List<TagDto> createdTagRespons = savedTags.stream().map(tagMapper::toTagResponse).toList();
@@ -41,6 +43,7 @@ public class TagController  {
     }
 
     @DeleteMapping(path ="/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteTag(@PathVariable UUID id) {
         tagService.deleteTag(id);
         return ResponseEntity.noContent().build();

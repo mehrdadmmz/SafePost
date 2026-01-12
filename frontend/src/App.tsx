@@ -8,7 +8,12 @@ import CategoriesPage from "./pages/CategoriesPage";
 import TagsPage from "./pages/TagsPage";
 import DraftsPage from "./pages/DraftsPage";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ProfilePage from "./pages/ProfilePage";
+import EditProfilePage from "./pages/EditProfilePage";
 import { AuthProvider, useAuth } from "./components/AuthContext";
+import { ThemeProvider } from "./components/ThemeProvider";
+import { Toaster } from "react-hot-toast";
 
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -26,11 +31,12 @@ function AppContent() {
 
   return (
     <BrowserRouter>
-      <NavBar 
+      <NavBar
         isAuthenticated={isAuthenticated}
         userProfile={user ? {
           name: user.name,
-          avatar: undefined // Add avatar support if needed
+          avatar: user.avatarUrl,
+          id: user.id
         } : undefined}
         onLogout={logout}
       />
@@ -38,15 +44,25 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route 
-            path="/posts/new" 
+          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/posts/new"
             element={
               <ProtectedRoute>
                 <EditPostPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route path="/posts/:id" element={<PostPage isAuthenticated={isAuthenticated}/>} />
+          <Route
+            path="/posts/:id"
+            element={
+              <PostPage
+                isAuthenticated={isAuthenticated}
+                currentUserId={user?.id}
+                currentUserRole={user?.role}
+              />
+            }
+          />
           <Route 
             path="/posts/:id/edit" 
             element={
@@ -57,13 +73,22 @@ function AppContent() {
           />
           <Route path="/categories" element={<CategoriesPage isAuthenticated={isAuthenticated}/>} />
           <Route path="/tags" element={<TagsPage isAuthenticated={isAuthenticated}/>} />
-          <Route 
-            path="/posts/drafts" 
+          <Route
+            path="/posts/drafts"
             element={
               <ProtectedRoute>
                 <DraftsPage />
               </ProtectedRoute>
-            } 
+            }
+          />
+          <Route path="/users/:id/profile" element={<ProfilePage />} />
+          <Route
+            path="/profile/edit"
+            element={
+              <ProtectedRoute>
+                <EditProfilePage />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </main>
@@ -73,9 +98,34 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppContent />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: 'var(--nextui-colors-background)',
+              color: 'var(--nextui-colors-foreground)',
+              border: '1px solid var(--nextui-colors-default-200)',
+            },
+            success: {
+              iconTheme: {
+                primary: '#17c964',
+                secondary: 'white',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#f31260',
+                secondary: 'white',
+              },
+            },
+          }}
+        />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
