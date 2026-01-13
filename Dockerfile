@@ -23,7 +23,7 @@ RUN addgroup -S spring && adduser -S spring -G spring
 RUN mkdir -p /app/uploads/covers /app/uploads/avatars && chown -R spring:spring /app/uploads
 
 # Copy the jar from the build stage
-COPY --from=build --chown=spring:spring /app/target/SafePost-*.jar app.jar
+COPY --from=build --chown=spring:spring /app/target/DevVault-*.jar app.jar
 
 # Switch to non-root user
 USER spring:spring
