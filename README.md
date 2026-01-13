@@ -402,9 +402,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Mehrdad Momenizadeh**
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
+- GitHub: [mehrdadmmz]([https://github.com/yourusername](https://github.com/mehrdadmmz))
+- LinkedIn: [LinkedIn](https://www.linkedin.com/in/mehrdad-momeni-zadeh-mma236/)
+- Email: mehrdad.mmz.ca@gmail.com
 
 ---
 
