@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.mehrdad</groupId>
-	<artifactId>SafePost</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>SafePost</name>
-	<description>A blog application </description>
+	<artifactId>DevVault</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>DevVault</name>
+	<description>Developer knowledge sharing platform</description>
 	<url/>
 	<licenses>
 		<license/>

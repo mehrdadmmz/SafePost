@@ -41,9 +41,9 @@ const LoginPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col gap-1 items-center pb-6 pt-8">
-          <h1 className="text-2xl font-bold">Sign in to SafePost</h1>
+          <h1 className="text-2xl font-bold">Sign in to DevVault</h1>
           <p className="text-sm text-default-500">
-            Welcome back! Please sign in to continue
+            Welcome back! Access your vault of knowledge
           </p>
         </CardHeader>
 

@@ -117,7 +117,7 @@ const EditPostPage: React.FC = () => {
               Back
             </Button>
             <h1 className="text-2xl font-bold">
-              {id ? 'Edit Post' : 'Create New Post'}
+              {id ? 'Edit Article' : 'Share Your Knowledge'}
             </h1>
           </div>
         </CardHeader>

@@ -57,16 +57,16 @@ const NavBar: React.FC<NavBarProps> = ({
 
       <NavbarContent className="sm:hidden pr-3" justify="center">
         <NavbarBrand>
-          <Link to="/" className="font-bold text-inherit">
-            Safe Post 📭
+          <Link to="/" className="font-bold text-inherit text-lg">
+            DevVault 🔐
           </Link>
         </NavbarBrand>
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="start">
         <NavbarBrand>
-          <Link to="/" className="font-bold text-inherit">
-            Safe Post 📭
+          <Link to="/" className="font-bold text-inherit text-lg">
+            DevVault 🔐
           </Link>
         </NavbarBrand>
         {menuItems.map((item) => (
@@ -109,7 +109,7 @@ const NavBar: React.FC<NavBarProps> = ({
                 variant="flat"
                 startContent={<BookDashed size={16} />}
               >
-                Draft Posts
+                My Drafts
               </Button>
             </NavbarItem>
             <NavbarItem>
@@ -120,7 +120,7 @@ const NavBar: React.FC<NavBarProps> = ({
                 variant="flat"
                 startContent={<Plus size={16} />}
               >
-                New Post
+                Share Knowledge
               </Button>
             </NavbarItem>
             <NavbarItem>
@@ -154,7 +154,7 @@ const NavBar: React.FC<NavBarProps> = ({
                     startContent={<Edit3 size={16} />}
                     onPress={() => navigate('/posts/drafts')}
                   >
-                    My Drafts
+                    My Articles
                   </DropdownItem>
                   <DropdownItem
                     key="logout"

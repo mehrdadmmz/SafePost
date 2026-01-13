@@ -115,8 +115,11 @@ class ApiService {
   private static instance: ApiService;
 
   private constructor() {
+    // Use environment variable for API URL in production, fallback to relative path for local
+    const apiBaseUrl = import.meta.env.VITE_API_URL || '';
+
     this.api = axios.create({
-      baseURL: '/api/v1',
+      baseURL: `${apiBaseUrl}/api/v1`,
       headers: {
         'Content-Type': 'application/json'
       }

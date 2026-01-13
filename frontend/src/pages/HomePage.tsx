@@ -62,17 +62,17 @@ const HomePage: React.FC = () => {
     <div className="max-w-6xl mx-auto px-4 space-y-6">
       <Card className="mb-6 px-2">
         <CardHeader>
-          <h1 className="text-2xl font-bold">Blog Posts</h1>
+          <h1 className="text-2xl font-bold">Knowledge Base</h1>
         </CardHeader>
         <CardBody>
           <div className="flex flex-col gap-4">
             <SearchBar
               onSearch={setSearchQuery}
-              placeholder="Search posts by title, content, or author..."
+              placeholder="Search articles by title, code, or contributor..."
               initialValue={searchQuery}
             />
-            <Tabs 
-              selectedKey={selectedCategory} 
+            <Tabs
+              selectedKey={selectedCategory}
               onSelectionChange={(key) => {
                 handleCategoryChange(key as string)
               }}
@@ -82,10 +82,10 @@ const HomePage: React.FC = () => {
                 cursor: "w-full bg-primary",
               }}
             >
-              <Tab key="all" title="All Posts" />
+              <Tab key="all" title="All Articles" />
               {categories.map((category) => (
-                <Tab 
-                  key={category.id} 
+                <Tab
+                  key={category.id}
                   title={`${category.name} (${category.postCount})`}
                 />
               ))}

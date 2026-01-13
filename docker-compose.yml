@@ -2,12 +2,12 @@ services:
   # PostgreSQL database
   db:
     image: postgres:16-alpine
-    container_name: safepost-db
+    container_name: devvault-db
     ports:
       - "5433:5432"
     restart: always
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-safepost}
+      POSTGRES_DB: ${POSTGRES_DB:-devvault}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changemeinprod!}
     volumes:
@@ -18,19 +18,19 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - safepost-network
+      - devvault-network
 
   # Spring Boot backend
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: safepost-backend
+    container_name: devvault-backend
     ports:
       - "8080:8080"
     restart: always
     environment:
-      DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-safepost}
+      DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-devvault}
       DATABASE_USERNAME: ${POSTGRES_USER:-postgres}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-changemeinprod!}
       JWT_SECRET: ${JWT_SECRET:-your-256-bit-secret-key-here-make-it-at-least-32-bytes-long}
@@ -43,33 +43,33 @@ services:
       db:
         condition: service_healthy
     networks:
-      - safepost-network
+      - devvault-network
 
   # React frontend with nginx
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: safepost-frontend
+    container_name: devvault-frontend
     ports:
       - "80:80"
     restart: always
     depends_on:
       - backend
     networks:
-      - safepost-network
+      - devvault-network
 
   # Database management interface
   adminer:
     image: adminer:latest
-    container_name: safepost-adminer
+    container_name: devvault-adminer
     restart: always
     ports:
       - "8888:8080"
     depends_on:
       - db
     networks:
-      - safepost-network
+      - devvault-network
 
 volumes:
   postgres_data:
@@ -78,5 +78,5 @@ volumes:
     driver: local
 
 networks:
-  safepost-network:
+  devvault-network:
     driver: bridge
