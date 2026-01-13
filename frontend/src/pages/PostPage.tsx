@@ -27,6 +27,8 @@ import {
 import { apiService, Post } from '../services/apiService';
 import { LikeButton } from '../components/LikeButton';
 import ShareMenu from '../components/ShareMenu';
+import { ConfirmModal, useConfirmModal } from '../components/ConfirmModal';
+import { useCodeBlockCopy } from '../components/CodeBlockWithCopy';
 
 interface PostPageProps {
   isAuthenticated?: boolean;
@@ -46,6 +48,10 @@ const PostPage: React.FC<PostPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isConfirmOpen, openConfirm, closeConfirm, config: confirmConfig } = useConfirmModal();
+
+  // Add copy buttons to code blocks
+  useCodeBlockCopy();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -65,10 +71,22 @@ const PostPage: React.FC<PostPageProps> = ({
     fetchPost();
   }, [id]);
 
+  const confirmDelete = () => {
+    if (!post) return;
+
+    openConfirm({
+      title: 'Delete Article',
+      message: `Are you sure you want to delete "${post.title}"? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger',
+      isLoading: isDeleting,
+      onConfirm: handleDelete,
+    });
+  };
+
   const handleDelete = async () => {
-    if (!post || !window.confirm('Are you sure you want to delete this post?')) {
-      return;
-    }
+    if (!post) return;
 
     try {
       setIsDeleting(true);
@@ -169,7 +187,7 @@ const PostPage: React.FC<PostPageProps> = ({
                   color="danger"
                   variant="flat"
                   startContent={<Trash size={16} />}
-                  onClick={handleDelete}
+                  onClick={confirmDelete}
                   isLoading={isDeleting}
                   size="sm"
                 >
@@ -278,6 +296,12 @@ const PostPage: React.FC<PostPageProps> = ({
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={closeConfirm}
+        {...confirmConfig}
+      />
     </div>
   );
 };

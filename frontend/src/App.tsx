@@ -2,6 +2,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
+import { CursorTrail } from "./components/CursorTrail";
 import HomePage from "./pages/HomePage";
 import EditPostPage from "./pages/EditPostPage";
 import PostPage from "./pages/PostPage";
@@ -32,6 +33,7 @@ function AppContent() {
 
   return (
     <BrowserRouter>
+      <CursorTrail />
       <div className="flex flex-col min-h-screen">
         <NavBar
           isAuthenticated={isAuthenticated}
