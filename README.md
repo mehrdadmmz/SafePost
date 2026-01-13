@@ -1,311 +1,415 @@
-# SafePost
- A blog post application build in Java, Spring Boot, Spring Security, OAuth2
+<div align="center">
+  <img src="vault.png" alt="DevVault Logo" width="120" height="120">
 
-## What each piece is for (mental model)
+  # DevVault 🔐
 
-### Entity — Category (DB shape)
-- Purpose: maps to the categories table; owns relationships (here, @OneToMany posts).
-- Typical contents: JPA annotations, identity (id), fields, relationships, lifecycle callbacks, equality by identity.
-- You never expose entities to clients directly.
+  **Your vault of developer knowledge**
 
-### DTO — CategoryDto (API shape)
-- Purpose: exactly what the client should see (id, name, postCount).
-- Typical contents: only public-facing fields, no JPA annotations, often tailored per endpoint.
+  A modern, full-stack knowledge sharing platform built for developers, by developers.
 
-### Repository — CategoryRepository (data access)
-- Purpose: query the DB for Category data.
-- Typical contents: findBy…, custom @Query, projections, pagination.
-- You return entities or projections, not DTOs.
+  [Features](#features) • [Tech Stack](#tech-stack) • [Getting Started](#getting-started) • [Architecture](#architecture) • [API Documentation](#api-documentation)
 
-### Service — CategoryService + Impl (business logic)
-- Purpose: orchestrates: chooses the right repo method, enforces rules, handles transactions.
-- Typical contents: transactional methods, cross-entity logic, caching, validation hooks.
-- Works with entities and/or projections; mapping to DTO can happen here or in controller.
+  ---
+</div>
 
-### Mapper — CategoryMapper (conversion glue)
-- Purpose: turns Entity/Projection → DTO (and sometimes DTO → Entity).
-- Typical contents: MapStruct mappings, small calculated fields (like postCount).
+## 📖 About
 
-### Controller — CategoryController (HTTP edge)
-- Purpose: handles routes, params, status codes; calls service; returns ResponseEntity<DTO>.
-- Typical contents: endpoint methods, 2xx/4xx/5xx decisions, headers.
+DevVault is a comprehensive developer knowledge platform that enables technical professionals to share solutions, tutorials, and insights. Built with Spring Boot and React, it demonstrates modern full-stack development practices including JWT authentication, REST API design, Docker containerization, and responsive UI development.
 
-## How they interact
-- Client calls GET /api/v1/categories
-- Controller (listCategories) calls Service → categoryService.listCategories()
-- Service calls Repository → findAllWithPostCount()
-- Repository runs JPQL/SQL → returns Category entities (with posts fetched)
-- Controller maps List<Category> → List<CategoryDto> using Mapper
-- Controller returns ResponseEntity.ok(dtos) → JSON to client
+## ✨ Features
 
+### Core Functionality
+- **📝 Rich Content Creation** - Write articles with a powerful rich-text editor featuring syntax-highlighted code blocks
+- **🖼️ Cover Images** - Upload and manage custom cover images for articles
+- **🏷️ Organization** - Categorize and tag content for easy discovery
+- **🔍 Search** - Fast full-text search across titles, content, and authors
+- **👤 User Profiles** - Customizable profiles with avatars, bio, and social links
+- **❤️ Engagement** - Like articles and track popular content
+- **📊 Analytics** - View counts and reading time estimates
+
+### User Experience
+- **🌓 Dark Mode** - Seamless light/dark theme switching with persistent preference
+- **📱 Responsive Design** - Mobile-first design that works on all devices
+- **⚡ Fast & Modern** - Built with Vite for lightning-fast development and production builds
+- **🎨 Beautiful UI** - Clean, developer-focused interface with JetBrains Mono font and subtle animations
+
+### Technical Highlights
+- **🔐 Secure Authentication** - JWT-based stateless authentication with bcrypt password hashing
+- **🐳 Docker Ready** - Complete Docker Compose setup for easy deployment
+- **📊 Database Migrations** - Flyway for version-controlled database schema management
+- **🔄 RESTful API** - Well-structured REST API following best practices
+- **🛡️ Role-Based Access** - ADMIN and USER roles with appropriate permissions
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Java 21** - Modern Java with latest language features
+- **Spring Boot 3.5.5** - Production-ready application framework
+- **Spring Security** - Comprehensive authentication and authorization
+- **Spring Data JPA** - Database access with Hibernate
+- **PostgreSQL 16** - Robust relational database
+- **Flyway** - Database migration management
+- **JWT (jjwt 0.11.5)** - Stateless authentication tokens
+- **MapStruct** - Type-safe bean mapping
+- **Lombok** - Reduced boilerplate code
+- **Maven** - Dependency management and build tool
+
+### Frontend
+- **React 18** - Modern UI library with hooks
+- **TypeScript** - Type-safe JavaScript
+- **Vite** - Next-generation frontend tooling
+- **NextUI** - Beautiful React component library
+- **TipTap** - Extensible rich-text editor
+- **React Router 7** - Client-side routing
+- **Axios** - HTTP client
+- **Tailwind CSS** - Utility-first CSS framework
+- **DOMPurify** - XSS sanitization
+
+### DevOps & Tools
+- **Docker & Docker Compose** - Containerization and orchestration
+- **Nginx** - Production-ready web server
+- **Adminer** - Database management interface
+- **Git** - Version control
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Docker Desktop installed and running
+- Git for version control
+- (Optional) Java 21 and Node.js 20 for local development
+
+### Quick Start with Docker
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/devvault.git
+   cd devvault
+   ```
+
+2. **Configure environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+3. **Start the application**
+   ```bash
+   docker-compose up --build
+   ```
+
+4. **Access the application**
+   - Frontend: http://localhost
+   - Backend API: http://localhost:8080
+   - Database Admin: http://localhost:8888
+
+### Default Credentials
+The application seeds a default admin account:
+- Email: `admin@devvault.com`
+- Password: `admin123`
+
+⚠️ **Important**: Change these credentials in production!
+
+## 📁 Project Structure
+
+```
+devvault/
+├── src/main/java/com/mehrdad/SafePost/
+│   ├── config/              # Security, CORS, and app configuration
+│   ├── controllers/         # REST API endpoints
+│   ├── domain/
+│   │   ├── entities/        # JPA entities (User, Post, Category, Tag)
+│   │   └── dtos/            # Data Transfer Objects
+│   ├── repositories/        # Spring Data JPA repositories
+│   ├── services/            # Business logic layer
+│   ├── security/            # JWT filters and utilities
+│   └── mappers/             # Entity ↔ DTO mappers
+├── src/main/resources/
+│   ├── application.properties           # App configuration
+│   └── db/migration/                    # Flyway migrations
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # Reusable React components
+│   │   ├── pages/           # Page-level components
+│   │   ├── services/        # API service layer
+│   │   └── App.tsx          # Root component
+│   └── public/              # Static assets
+├── docker-compose.yml       # Multi-container orchestration
+├── Dockerfile              # Backend container
+└── README.md
+```
+
+## 🏗️ Architecture
+
+### Layered Architecture
+
+DevVault follows a clean, layered architecture pattern:
+
+```
+┌─────────────────────────────────────────┐
+│         Client (React SPA)              │
+│  - Components, Pages, State Management  │
+└─────────────────┬───────────────────────┘
+                  │ HTTP/JSON (REST API)
+┌─────────────────▼───────────────────────┐
+│         Controller Layer                │
+│  - Request/Response handling            │
+│  - Validation, Error handling           │
+└─────────────────┬───────────────────────┘
+                  │
+┌─────────────────▼───────────────────────┐
+│         Service Layer                   │
+│  - Business logic                       │
+│  - Transaction management               │
+└─────────────────┬───────────────────────┘
+                  │
+┌─────────────────▼───────────────────────┐
+│      Repository Layer (Spring Data)     │
+│  - Data access abstraction              │
+│  - Custom queries                       │
+└─────────────────┬───────────────────────┘
+                  │
+┌─────────────────▼───────────────────────┐
+│         Database (PostgreSQL)           │
+│  - Persistent storage                   │
+└─────────────────────────────────────────┘
+```
+
+### Authentication Flow
+
+```
+┌──────────┐                                    ┌──────────┐
+│  Client  │                                    │  Server  │
+└────┬─────┘                                    └────┬─────┘
+     │                                                │
+     │  POST /api/v1/auth/login                      │
+     │  { email, password }                          │
+     ├──────────────────────────────────────────────>│
+     │                                                │
+     │                                     ┌──────────▼─────────┐
+     │                                     │ Authentication     │
+     │                                     │ Manager validates  │
+     │                                     │ credentials        │
+     │                                     └──────────┬─────────┘
+     │                                                │
+     │  200 OK                                        │
+     │  { token: "eyJhbG..." }                        │
+     │<───────────────────────────────────────────────┤
+     │                                                │
+     │  GET /api/v1/posts                             │
+     │  Authorization: Bearer eyJhbG...               │
+     ├──────────────────────────────────────────────>│
+     │                                                │
+     │                                     ┌──────────▼─────────┐
+     │                                     │ JWT Filter         │
+     │                                     │ validates token    │
+     │                                     │ sets SecurityContext│
+     │                                     └──────────┬─────────┘
+     │                                                │
+     │  200 OK                                        │
+     │  [ { post }, { post }, ... ]                   │
+     │<───────────────────────────────────────────────┤
+     │                                                │
+```
+
+## 🔒 Security
+
+### Authentication & Authorization
+- **JWT Tokens**: Stateless authentication with 24-hour token expiration
+- **Password Security**: Bcrypt hashing with salt rounds
+- **Role-Based Access Control**: USER and ADMIN roles
+- **CORS Configuration**: Configurable allowed origins
+- **XSS Protection**: DOMPurify sanitization on frontend
+
+### Security Configuration
+- Public endpoints: `GET /api/v1/posts/**`, `/api/v1/categories/**`, `/api/v1/tags/**`
+- Protected endpoints: All POST, PUT, DELETE operations require authentication
+- Admin-only: User management, category/tag management
+
+## 📡 API Documentation
+
+### Authentication Endpoints
+```
+POST   /api/v1/auth/login       # Login and get JWT token
+POST   /api/v1/auth/register    # Register new user
+GET    /api/v1/auth/me          # Get current user profile
+```
+
+### Post Endpoints
+```
+GET    /api/v1/posts                    # List all published posts
+GET    /api/v1/posts/{id}               # Get single post
+POST   /api/v1/posts                    # Create new post (auth)
+PUT    /api/v1/posts/{id}               # Update post (auth, owner/admin)
+DELETE /api/v1/posts/{id}               # Delete post (auth, owner/admin)
+GET    /api/v1/posts/drafts             # Get user's draft posts (auth)
+POST   /api/v1/posts/{id}/likes         # Toggle like (auth)
+```
+
+### Category & Tag Endpoints
+```
+GET    /api/v1/categories               # List all categories
+POST   /api/v1/categories               # Create category (admin)
+PUT    /api/v1/categories/{id}          # Update category (admin)
+DELETE /api/v1/categories/{id}          # Delete category (admin)
+
+GET    /api/v1/tags                     # List all tags
+POST   /api/v1/tags                     # Create tag (admin)
+PUT    /api/v1/tags/{id}                # Update tag (admin)
+DELETE /api/v1/tags/{id}                # Delete tag (admin)
+```
+
+### File Upload Endpoints
+```
+POST   /api/v1/files/covers             # Upload cover image (auth)
+GET    /api/v1/files/covers/{filename}  # Serve cover image
+```
+
+### Example Request
 ```bash
+# Login
+curl -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@devvault.com","password":"admin123"}'
 
-Below is a simple architecture of how different layers talk to each other for the Category part
-
-
-        [ HTTP Client ]
-              |
-              v
-+---------------------------+
-|   CategoryController      |
-|  - routes (/categories)   |
-|  - ResponseEntity<DTO>    |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-|     CategoryService       |
-|  - business logic         |
-|  - transactions           |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-|    CategoryRepository     |
-|  - DB queries (JPA)       |
-+-------------+-------------+
-              |
-              v
-+---------------------------+        +------------------+
-|     Category Entity       |<------>|     Post Entity  |
-|  - JPA mapping            | 1..*   |  (many-to-one)   |
-+---------------------------+        +------------------+
-
-   (mapping happens here on the way back)
-
-              ^
-              |
-+---------------------------+
-|      CategoryMapper       |
-|  Entity/Proj -> DTO       |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-|       CategoryDto         |
-|  - API contract           |
-+---------------------------+
+# Create Post (with JWT token)
+curl -X POST http://localhost:8080/api/v1/posts \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "title":"Getting Started with Spring Boot",
+    "content":"<p>Spring Boot makes it easy...</p>",
+    "categoryId":"category-uuid",
+    "tagIds":["tag-uuid-1","tag-uuid-2"],
+    "status":"PUBLISHED"
+  }'
 ```
 
-## Spring Security
-### With the current config file: 
+## 🧪 Development
 
-- GET /api/v1/posts/** → public
-- GET /api/v1/categories/** → public
-- GET /api/v1/tags/** → public
-- POST /api/v1/posts, PUT /api/v1/categories, DELETE /api/v1/tags, etc. → require authentication
-- Passwords will be encoded using bcrypt.
-- No sessions; you’ll need stateless auth (JWT tokens or Basic auth).
-
+### Backend Development
 ```bash
+# Run backend locally (requires PostgreSQL)
+cd devvault
+./mvnw spring-boot:run
 
-Client HTTP Request
-   |
-   v
-[ Security Filter Chain ]
-   |-- matches URL rules?
-   |   |-- /api/v1/posts (GET)? permitAll ✅
-   |   |-- anything else? require authentication 🔒
-   |
-   v
-If authenticated -> Controller
-Else -> 401 Unauthorized
+# Run tests
+./mvnw test
+
+# Build JAR
+./mvnw clean package
 ```
 
-## Stateless Auth
-Instead of keeping sessions in memory, every request carries all the information needed.
-The server doesn’t “remember” anything.
-
-- JWT (JSON Web Token) Authentication:
-
-Flow:
-- User logs in (POST /login with username & password).
-- Server verifies credentials, then creates a JWT token (signed, not encrypted).
-- Client stores the JWT (usually in localStorage or memory).
-- On every request, client sends: 
+### Frontend Development
 ```bash
-  Authorization: Bearer <JWT_TOKEN>
+# Install dependencies
+cd frontend
+npm install
+
+# Run dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
-- Server verifies the signature (using a secret key).
-- If valid → request continues. No DB lookup needed.
 
+### Database Migrations
+Flyway migrations are located in `src/main/resources/db/migration/`:
+- `V1__initial_schema.sql` - Initial database schema
+- `V2__add_user_roles.sql` - User roles and permissions
+- Add new migrations following the naming pattern
 
+## 🐳 Docker Deployment
 
-## JWT Work Flow
-
+### Production Build
 ```bash
+# Build all services
+docker-compose build
 
-POST /api/v1/auth/login
-{
-  "username": "randomUser",
-  "password": "secret"
-}
+# Start in detached mode
+docker-compose up -d
 
-   |
-   v
-Server verifies -> returns JWT:
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-}
+# View logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
 
-   |
-   v
-Client stores token, then calls:
-GET /api/v1/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...
-
-   |
-   v
-Spring Security verifies token -> if valid -> controller runs
-
+# Stop all services
+docker-compose down
 ```
 
-## Bean
-- A bean = an object managed by Spring (created once, injected everywhere).
-- @Bean is a method-level annotation. It tells Spring: “Run this method once at startup, put the returned object in the container, and manage it as a bean.”
+### Environment Variables
+Configure these in `.env` for production:
+```env
+# Database
+POSTGRES_DB=devvault
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your-secure-password
 
-```bash
+# Backend
+JWT_SECRET=your-256-bit-secret-key-here
+SPRING_PROFILES_ACTIVE=prod
+CORS_ALLOWED_ORIGINS=https://yourdomain.com
 
-@Configuration class (SecurityConfig)
-       |
-       |  @Bean methods
-       v
-+----------------------------+
-| Spring IoC Container       |
-|   - SecurityFilterChain    |
-|   - PasswordEncoder        |
-|   - AuthenticationManager  |
-+----------------------------+
-       |
-       |  @Autowired / constructor injection
-       v
-Other components (Controllers, Services, Filters)
-
+# File Storage
+FILE_UPLOAD_DIR=/app/uploads/covers
 ```
 
-## Auth 
+## 🗄️ Database Schema
 
-1) Login (issue a token)
-```bash
+### Core Tables
+- **users** - User accounts and profiles
+- **posts** - Articles and content
+- **categories** - Content categorization
+- **tags** - Content tagging
+- **post_tags** - Many-to-many relationship
+- **post_likes** - User likes on posts
 
-Client                  Server
-------                  ------------------------------
-POST /auth/login  --->  AuthenticationService.authenticate(email, password)
-                         └─ uses AuthenticationManager + UserDetailsService
-                         (if OK)
-                         → generateToken(userDetails)  (signed JWT)
-<--- 200 { token }       return token to client
-```
+### Key Relationships
+- User → Posts (one-to-many, author relationship)
+- Post → Category (many-to-one)
+- Post → Tags (many-to-many via post_tags)
+- Post → Likes (many-to-many via post_likes)
 
-2) Use token on protected routes
-```bash
+## 🤝 Contributing
 
-Client                             Server
-------                             ------------------------------------------
-GET /api/... + Authorization: Bearer <JWT>
-                            --->  JwtAuthenticationFilter
-                                   ├─ extract token
-                                   ├─ validate signature + expiry
-                                   ├─ load UserDetails
-                                   └─ set SecurityContext(Authentication)
-                                 → Controller method
-<--- 200 JSON
-```
+Contributions are welcome! Please follow these guidelines:
 
-## Authorization sample 
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### Login to get a token
-Suppose the app has a login endpoint:
-```bash
+### Code Style
+- Backend: Follow Java conventions, use Lombok for boilerplate reduction
+- Frontend: ESLint configuration provided, use TypeScript strictly
+- Commits: Use conventional commits format
 
-POST /api/v1/auth/login
-Content-Type: application/json
+## 📝 License
 
-{
-  "email": "mehrdad@example.com",
-  "password": "secret123"
-}
-```
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Server response:
-```bash
+## 🙏 Acknowledgments
 
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-}
-```
-That long string is our JWT.
+- NextUI for the beautiful component library
+- TipTap for the extensible editor
+- Spring Boot team for the excellent framework
+- The open-source community
 
-### Use token in Authorization header
-Now when you call a protected endpoint, include the token like this:
-```bash
+## 📧 Contact
 
-GET /api/v1/posts/123
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...
+**Mehrdad Momenizadeh**
 
-```
+- GitHub: [@yourusername](https://github.com/yourusername)
+- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- Email: your.email@example.com
 
-### Server behaviour
-- Your JWT filter grabs the Authorization header.
-- Strips "Bearer " → leaves just the token.
-- Validates signature + expiry.
-- If valid → sets user details into the SecurityContext.
-- Controller executes normally.
-- If invalid/expired → return 401 Unauthorized.
+---
 
+<div align="center">
+  Built with ❤️ by developers, for developers
 
-
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, I recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
-
-Kind regards,
-
-Mehrdad
+  ⭐ Star this repo if you find it helpful!
+</div>

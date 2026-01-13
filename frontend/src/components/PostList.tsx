@@ -98,7 +98,7 @@ const PostList: React.FC<PostListProps> = ({
         <>
           <div className="space-y-4">
             {posts?.map((post) => (
-              <Card key={post.id} className="w-full p-2" isPressable={true} onPress={() => navToPostPage(post)}>
+              <Card key={post.id} className="w-full p-2 article-card" isPressable={true} onPress={() => navToPostPage(post)}>
                 <CardHeader className="flex justify-between items-start gap-3">
                     <h2 className="text-xl font-bold text-left flex-1">
                       {post.title}

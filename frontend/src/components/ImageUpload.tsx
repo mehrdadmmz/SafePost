@@ -85,7 +85,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full">
       <input
         ref={fileInputRef}
         type="file"
@@ -95,7 +95,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       />
 
       {preview ? (
-        <Card>
+        <Card className="w-full">
           <CardBody className="p-0 relative">
             <img
               src={preview}
@@ -118,10 +118,10 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         <Card
           isPressable
           onPress={handleClick}
-          className="border-2 border-dashed border-default-300 bg-default-50 hover:bg-default-100"
+          className="border-2 border-dashed border-default-300 bg-default-50 hover:bg-default-100 w-full"
         >
-          <CardBody className="flex flex-col items-center justify-center py-12 space-y-2">
-            <ImageIcon size={48} className="text-default-400" />
+          <CardBody className="flex flex-col items-center justify-center py-6 space-y-2">
+            <ImageIcon size={40} className="text-default-400" />
             <p className="text-default-600">Click to upload cover image</p>
             <p className="text-xs text-default-400">JPG, PNG, GIF, WebP (Max 5MB)</p>
             <Button
@@ -130,7 +130,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               startContent={<Upload size={16} />}
               isLoading={uploading}
             >
-              {uploading ? 'Uploading...' : 'Choose Image'}
+              {uploading ? 'Uploading..' : 'Choose Image'}
             </Button>
           </CardBody>
         </Card>

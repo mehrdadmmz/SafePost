@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NavBar from "./components/NavBar";
+import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import EditPostPage from "./pages/EditPostPage";
 import PostPage from "./pages/PostPage";
@@ -31,67 +32,70 @@ function AppContent() {
 
   return (
     <BrowserRouter>
-      <NavBar
-        isAuthenticated={isAuthenticated}
-        userProfile={user ? {
-          name: user.name,
-          avatar: user.avatarUrl,
-          id: user.id
-        } : undefined}
-        onLogout={logout}
-      />
-      <main className="container mx-auto py-6">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route
-            path="/posts/new"
-            element={
-              <ProtectedRoute>
-                <EditPostPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/posts/:id"
-            element={
-              <PostPage
-                isAuthenticated={isAuthenticated}
-                currentUserId={user?.id}
-                currentUserRole={user?.role}
+      <div className="flex flex-col min-h-screen">
+        <NavBar
+          isAuthenticated={isAuthenticated}
+          userProfile={user ? {
+            name: user.name,
+            avatar: user.avatarUrl,
+            id: user.id
+          } : undefined}
+          onLogout={logout}
+        />
+        <main className="container mx-auto py-6 flex-grow">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/posts/new"
+              element={
+                <ProtectedRoute>
+                  <EditPostPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/posts/:id"
+              element={
+                <PostPage
+                  isAuthenticated={isAuthenticated}
+                  currentUserId={user?.id}
+                  currentUserRole={user?.role}
+                />
+              }
+            />
+            <Route
+              path="/posts/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditPostPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/categories" element={<CategoriesPage isAuthenticated={isAuthenticated}/>} />
+            <Route path="/tags" element={<TagsPage isAuthenticated={isAuthenticated}/>} />
+            <Route
+              path="/posts/drafts"
+              element={
+                <ProtectedRoute>
+                  <DraftsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/users/:id/profile" element={<ProfilePage />} />
+            <Route
+              path="/profile/edit"
+              element={
+                <ProtectedRoute>
+                  <EditProfilePage />
+                </ProtectedRoute>
+                }
               />
-            }
-          />
-          <Route 
-            path="/posts/:id/edit" 
-            element={
-              <ProtectedRoute>
-                <EditPostPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route path="/categories" element={<CategoriesPage isAuthenticated={isAuthenticated}/>} />
-          <Route path="/tags" element={<TagsPage isAuthenticated={isAuthenticated}/>} />
-          <Route
-            path="/posts/drafts"
-            element={
-              <ProtectedRoute>
-                <DraftsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/users/:id/profile" element={<ProfilePage />} />
-          <Route
-            path="/profile/edit"
-            element={
-              <ProtectedRoute>
-                <EditProfilePage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </main>
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </BrowserRouter>
   );
 }

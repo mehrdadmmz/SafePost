@@ -2,18 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
 html,
 body,
 #root {
   height: 100vh;
   margin: 0;
   padding: 0;
+  font-family: var(--font-mono);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Subtle grid background pattern */
+body {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+html.dark body {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 #root {
   width: 100%;
   min-height: 100%;
+}
+
+/* Apply JetBrains Mono to headings and important elements */
+h1, h2, h3, h4, h5, h6,
+.font-bold,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-mono);
+}
+
+/* Card hover effects with gradient glow */
+[data-hover="true"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-hover="true"]:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(59, 130, 246, 0.1),
+    0 0 20px rgba(59, 130, 246, 0.15);
+}
+
+html.dark [data-hover="true"]:hover {
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.4),
+    0 8px 10px -6px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(96, 165, 250, 0.2),
+    0 0 30px rgba(96, 165, 250, 0.2);
+}
+
+/* Article card specific hover effect */
+.article-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.article-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.05), transparent);
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.article-card:hover::before {
+  left: 100%;
+}
+
+html.dark .article-card::before {
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.08), transparent);
 }
 
 /* Dark mode background */
@@ -103,7 +183,7 @@ pre {
   background-color: #1e1e1e;
   border-radius: 0.5rem;
   color: #e4e4e7;
-  font-family: 'JetBrainsMono', 'Courier New', Courier, monospace;
+  font-family: var(--font-mono);
   padding: 1rem 1.5rem;
   overflow-x: auto;
   margin: 1rem 0;

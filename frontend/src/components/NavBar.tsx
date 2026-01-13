@@ -57,16 +57,18 @@ const NavBar: React.FC<NavBarProps> = ({
 
       <NavbarContent className="sm:hidden pr-3" justify="center">
         <NavbarBrand>
-          <Link to="/" className="font-bold text-inherit text-lg">
-            DevVault 🔐
+          <Link to="/" className="font-bold text-inherit text-lg flex items-center gap-2">
+            <img src="/vault.png" alt="DevVault" className="w-6 h-6" />
+            DevVault
           </Link>
         </NavbarBrand>
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="start">
         <NavbarBrand>
-          <Link to="/" className="font-bold text-inherit text-lg">
-            DevVault 🔐
+          <Link to="/" className="font-bold text-inherit text-lg flex items-center gap-2">
+            <img src="/vault.png" alt="DevVault" className="w-6 h-6" />
+            DevVault
           </Link>
         </NavbarBrand>
         {menuItems.map((item) => (
